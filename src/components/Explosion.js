@@ -3,7 +3,7 @@ import styled, { keyframes } from 'styled-components';
 
 const EXPLOSION_FRAME_WIDTH = 128; // From your analysis
 const EXPLOSION_FRAME_HEIGHT = 171; // From your analysis (1024 / 6 rounded)
-const EXPLOSION_TOTAL_FRAMES = 58; // From your analysis
+const EXPLOSION_TOTAL_FRAMES = 2; // From your analysis
 const EXPLOSION_COLS = 8;
 const EXPLOSION_ROWS = 6; // Used for calculation if needed, but steps handles it
 
@@ -47,7 +47,7 @@ const Explosion = ({ x, y, onAnimationComplete }) => {
   }, [onAnimationComplete]);
 
   return (
-    <ExplosionContainer style={{ left: x, top: y }} />
+    <ExplosionContainer style={{ left: x, bottom: y }} />
   );
 };
 

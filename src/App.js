@@ -7,6 +7,15 @@ import Bullet from './components/Bullet';
 import Explosion from './components/Explosion';
 import * as resumeData from './resumeData';
 
+  // Only show these four main categories
+  const menuItems = [
+    { label: 'WORK', route: '/resume/experience' },
+    { label: 'SKILLS', route: '/resume/skills' },
+    { label: 'ABOUT ME', route: '/resume/profileSummary' },
+    { label: 'CONTACT', route: '/resume/profile' },
+    { label: 'PLAY GAME', route: '/game' },
+  ];
+
 // --- Game Constants ---
 const JET_WIDTH = 290;
 const JET_HEIGHT = 150;
@@ -90,12 +99,12 @@ const useGameStore = create((set, get) => ({
           bullet.y < brick.y + FALLING_BRICK_HEIGHT &&
           bullet.y + BULLET_HEIGHT > brick.y
         ) {
-          hit = true;
-          // Center explosion on brick
+          // Call addExplosion FIRST for instant feedback
           addExplosion(
-            brick.x + FALLING_BRICK_WIDTH / 2 - 64,
-            brick.y + FALLING_BRICK_HEIGHT / 2 - 64
+            brick.x + FALLING_BRICK_WIDTH / 2 - 128 / 2,
+            brick.y + FALLING_BRICK_HEIGHT / 2 - 171 / 2
           );
+          hit = true;
           if (brick.type === 'bonus') {
             bonusTriggered = true;
           }
@@ -257,16 +266,11 @@ function ResumeSectionPage({ section }) {
 // --- Main Menu ---
 function MainMenu() {
   const navigate = useNavigate();
-  // Only show these four main categories
-  const menuItems = [
-    { label: 'WORK', route: '/resume/experience' },
-    { label: 'SKILLS', route: '/resume/skills' },
-    { label: 'ABOUT ME', route: '/resume/profileSummary' },
-    { label: 'CONTACT', route: '/resume/profile' },
-    { label: 'PLAY GAME', route: '/game' },
-  ];
   const [selected, setSelected] = React.useState(0);
   const btnRefs = React.useRef([]);
+  const addExplosion = useGameStore(state => state.addExplosion);
+  const [explosionTestActive, setExplosionTestActive] = React.useState(false);
+  const explosionIntervalRef = React.useRef(null);
 
   // Keyboard navigation
   React.useEffect(() => {
@@ -276,6 +280,9 @@ function MainMenu() {
       } else if (e.key === 'ArrowUp') {
         setSelected((prev) => (prev - 1 + menuItems.length) % menuItems.length);
       } else if (e.key === 'Enter') {
+        if (menuItems[selected].label === 'SKILLS') {
+          setExplosionTestActive(true);
+        }
         navigate(menuItems[selected].route);
       }
     };
@@ -288,8 +295,40 @@ function MainMenu() {
     btnRefs.current[selected]?.focus();
   }, [selected]);
 
+  // Explosion test effect
+  React.useEffect(() => {
+    if (explosionTestActive) {
+      explosionIntervalRef.current = setInterval(() => {
+        const x = Math.random() * (window.innerWidth - 128);
+        const y = Math.random() * (window.innerHeight - 128);
+        addExplosion(x, y);
+      }, 200);
+    } else if (explosionIntervalRef.current) {
+      clearInterval(explosionIntervalRef.current);
+      explosionIntervalRef.current = null;
+    }
+    return () => {
+      if (explosionIntervalRef.current) {
+        clearInterval(explosionIntervalRef.current);
+        explosionIntervalRef.current = null;
+      }
+    };
+  }, [explosionTestActive, addExplosion]);
+
+  // Stop explosion test when navigating away
+  React.useEffect(() => {
+    return () => {
+      if (explosionIntervalRef.current) {
+        clearInterval(explosionIntervalRef.current);
+        explosionIntervalRef.current = null;
+      }
+    };
+  }, []);
+
+
+
   return (
-    <div style={{
+    <div className="root" style={{
       minHeight: '100vh',
       display: 'flex',
       flexDirection: 'column',
@@ -312,15 +351,18 @@ function MainMenu() {
           ref={el => btnRefs.current[idx] = el}
           className={`retro-menu-btn${selected === idx ? ' selected' : ''}`}
           tabIndex={0}
-          onClick={() => navigate(item.route)}
+          onClick={() => {
+            if (item.label === 'SKILLS') setExplosionTestActive(true);
+            navigate(item.route);
+          }}
         >
           {item.label}
         </button>
       ))}
       <div style={{ marginTop: 40, color: '#fff', fontFamily: '"Press Start 2P", monospace', fontSize: '0.9em', opacity: 0.7 }}>
         Use ↑/↓ to navigate, Enter to select
-        </div>
-        </div>
+      </div>
+    </div>
   );
 }
 
