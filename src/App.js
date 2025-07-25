@@ -1,556 +1,481 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { create } from 'zustand';
+import React, { useState, useEffect, useCallback } from 'react';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { BrowserRouter as Router, Routes, Route, useNavigate, useParams } from 'react-router-dom';
-import Jet from './components/Jet';
-import Bullet from './components/Bullet';
-import Explosion from './components/Explosion';
-import * as resumeData from './resumeData';
+// Removed Howl, Jet, Bullet, Explosion imports as game logic moved to Game.js
+import Game from './Game'; // Import the new Game component
+import Jet from './components/Jet'; // Import Jet component for main menu
 
-  // Only show these four main categories
-  const menuItems = [
-    { label: 'WORK', route: '/resume/experience' },
-    { label: 'SKILLS', route: '/resume/skills' },
-    { label: 'ABOUT ME', route: '/resume/profileSummary' },
-    { label: 'CONTACT', route: '/resume/profile' },
-    { label: 'PLAY GAME', route: '/game' },
-  ];
+import { profile, experience, skills, education, profileSummary, careerHighlights, earlyCareer, links, interests, personalDetails, certificates } from './resumeData';
 
-// --- Game Constants ---
-const JET_WIDTH = 290;
-const JET_HEIGHT = 150;
-const BULLET_WIDTH = 200;
-const BULLET_HEIGHT = 100;
-const FALLING_BRICK_WIDTH = 150;
-const FALLING_BRICK_HEIGHT = 50;
-const GAME_AREA_PADDING = 50;
-const BRICK_SPAWN_INTERVAL_MS = 1500;
-const BRICK_SPEED = 6;
-const BULLET_SPEED = 18;
-const BULLET_FIRE_RATE_MS = 200;
-
-// --- Zustand Store ---
-const useGameStore = create((set, get) => ({
-  jetX: window.innerWidth / 2 - JET_WIDTH / 2,
-  bullets: [],
-  bricks: [],
-  explosions: [],
-  score: 0,
-  gameOver: false,
-  jetSpeed: 30,
-  bonusActive: false,
-  missedBricks: 0,
-  moveJet: (dir) =>
-    set((state) => ({
-      jetX: Math.max(
-        GAME_AREA_PADDING,
-        Math.min(window.innerWidth - JET_WIDTH - GAME_AREA_PADDING, state.jetX + dir * state.jetSpeed)
-      ),
-    })),
-  fireBullet: () =>
-    set((state) => ({
-      bullets: [
-        ...state.bullets,
-        {
-          x: state.jetX + JET_WIDTH / 2 - BULLET_WIDTH / 2,
-          y: JET_HEIGHT,
-          id: Date.now() + Math.random(),
-        },
-      ],
-    })),
-  addExplosion: (x, y) =>
-    set((state) => ({
-      explosions: [
-        ...state.explosions,
-        {
-          id: Date.now() + Math.random(),
-          x,
-          y,
-        },
-      ],
-    })),
-  removeExplosion: (id) =>
-    set((state) => ({
-      explosions: state.explosions.filter((exp) => exp.id !== id),
-    })),
-  tick: () => {
-    const { bullets, bricks, jetX, score, gameOver, addExplosion, bonusActive, missedBricks } = get();
-    if (gameOver) return;
-    // Move bullets up
-    const newBullets = bullets
-      .map((b) => ({ ...b, y: b.y + BULLET_SPEED }))
-      .filter((b) => b.y < window.innerHeight);
-    // Move bricks down
-    let newBricks = bricks
-      .map((br) => ({ ...br, y: br.y - BRICK_SPEED }));
-    // Collision detection
-    let newScore = score;
-    let filteredBricks = [];
-    let filteredBullets = [...newBullets];
-    let bonusTriggered = false;
-    let newMissedBricks = missedBricks;
-    for (let brick of newBricks) {
-      let hit = false;
-      for (let i = 0; i < filteredBullets.length; i++) {
-        const bullet = filteredBullets[i];
-        if (
-          bullet.x < brick.x + FALLING_BRICK_WIDTH &&
-          bullet.x + BULLET_WIDTH > brick.x &&
-          bullet.y < brick.y + FALLING_BRICK_HEIGHT &&
-          bullet.y + BULLET_HEIGHT > brick.y
-        ) {
-          // Call addExplosion FIRST for instant feedback
-          addExplosion(
-            brick.x + FALLING_BRICK_WIDTH / 2 - 128 / 2,
-            brick.y + FALLING_BRICK_HEIGHT / 2 - 171 / 2
-          );
-          hit = true;
-          if (brick.type === 'bonus') {
-            bonusTriggered = true;
-          }
-          filteredBullets.splice(i, 1);
-          newScore += (brick.type === 'bonus' ? 50 : 10);
-          break;
-        }
-      }
-      // If not hit, check if it escaped (fell below 0)
-      if (!hit) {
-        if (brick.y + FALLING_BRICK_HEIGHT <= 0) {
-          newMissedBricks++;
-        } else {
-          filteredBricks.push(brick);
-        }
-      }
-    }
-    // Game over if missedBricks >= 3
-    const gameOverNow = newMissedBricks >= 3 || filteredBricks.some(
-      (br) =>
-        br.y <= 0 + JET_HEIGHT &&
-        br.x + FALLING_BRICK_WIDTH > jetX &&
-        br.x < jetX + JET_WIDTH
-    );
-    set({
-      bullets: filteredBullets,
-      bricks: filteredBricks,
-      score: newScore,
-      gameOver: gameOverNow,
-      missedBricks: newMissedBricks,
-    });
-    // Handle bonus effect
-    if (bonusTriggered && !bonusActive) {
-      set({ jetSpeed: 80, bonusActive: true });
-      setTimeout(() => {
-        set({ jetSpeed: 30, bonusActive: false });
-      }, 5000);
-    }
-  },
-  spawnBrick: () =>
-    set((state) => {
-      // 1 in 5 chance for bonus brick
-      const isBonus = Math.random() < 0.2;
-      return {
-        bricks: [
-          ...state.bricks,
-          {
-            x: Math.random() * (window.innerWidth - FALLING_BRICK_WIDTH - 2 * GAME_AREA_PADDING) + GAME_AREA_PADDING,
-            y: window.innerHeight - FALLING_BRICK_HEIGHT,
-            id: Date.now() + Math.random(),
-            type: isBonus ? 'bonus' : 'regular',
-          },
-        ],
-      };
-    }),
-  reset: () =>
-    set({
-      jetX: window.innerWidth / 2 - JET_WIDTH / 2,
-      bullets: [],
-      bricks: [],
-      explosions: [],
-      score: 0,
-      gameOver: false,
-      jetSpeed: 30,
-      bonusActive: false,
-      missedBricks: 0,
-    }),
-}));
 
 // --- Styled Components ---
-const GameArea = styled.div`
-  width: 100vw;
-  height: 100vh;
-  background: #222 url(${process.env.PUBLIC_URL}/game/bg_main_background2.webp) center/cover;
-  position: fixed;
-  top: 0;
-  left: 0;
-  overflow: hidden;
-  z-index: 1;
-`;
-const JetContainer = styled.div`
-  position: absolute;
-  left: ${(props) => props.x}px;
-  bottom: 0;
-  width: ${JET_WIDTH}px;
-  height: ${JET_HEIGHT}px;
-`;
-const BulletStyled = styled.div`
-  position: absolute;
-  width: ${BULLET_WIDTH}px;
-  height: ${BULLET_HEIGHT}px;
-  left: ${(props) => props.x}px;
-  bottom: ${(props) => props.y}px;
-  background-image: url(${process.env.PUBLIC_URL}/game/bullet.png);
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  z-index: 9;
-`;
-const BrickStyled = styled.div`
-  position: absolute;
-  width: ${FALLING_BRICK_WIDTH}px;
-  height: ${FALLING_BRICK_HEIGHT}px;
-  left: ${(props) => props.x}px;
-  bottom: ${(props) => props.y}px;
-  background: ${props => props.type === 'bonus'
-    ? 'gold url("https://em-content.zobj.net/source/microsoft-teams/337/star_2b50.png") center/contain no-repeat'
-    : `#f44 url(${process.env.PUBLIC_URL}/game/pixelated_node.jpeg) center/cover`};
-  border-radius: 6px;
-  border: 2px solid #fff;
-  box-shadow: ${props => props.type === 'bonus' ? '0 0 24px 8px gold' : 'none'};
-`;
-const MenuContainer = styled.div`
+const GameContainer = styled.div`
   width: 100vw;
   height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: #111 url(${process.env.PUBLIC_URL}/game/bg_main_background.webp) center/cover;
-`;
-const MenuButton = styled.button`
-  font-size: 2em;
-  margin: 20px;
-  padding: 20px 60px;
-  border-radius: 12px;
-  border: 2px solid #fff;
-  background: rgba(0,0,0,0.7);
-  color: #fff;
-  cursor: pointer;
-  box-shadow: 0 0 20px #0ff;
-  transition: background 0.2s, color 0.2s;
-  &:hover {
-    background: #0ff;
-    color: #111;
+  background-image: url(${process.env.PUBLIC_URL}/game/bg_main_background2.webp);
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+  color: white;
+  font-family: "Press Start 2P", monospace;
+  
+  @media (max-width: 768px) {
+    font-size: 0.8em;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 0.6em;
   }
 `;
 
-// --- Resume Section Pages ---
-function ResumeSectionPage({ section }) {
-  const navigate = useNavigate();
-  const data = resumeData[section];
-  return (
-    <MenuContainer>
-      <MenuButton onClick={() => navigate('/')}>Back to Menu</MenuButton>
-      <h1 style={{ color: '#0ff', marginBottom: 32 }}>{section.charAt(0).toUpperCase() + section.slice(1)}</h1>
-      <div style={{ maxWidth: 900, background: 'rgba(0,0,0,0.7)', padding: 32, borderRadius: 16, color: '#fff' }}>
-        {Array.isArray(data)
-          ? data.map((item, i) => <div key={i} style={{ marginBottom: 16 }}>{typeof item === 'string' ? item : JSON.stringify(item)}</div>)
-          : typeof data === 'object'
-            ? Object.entries(data).map(([k, v], i) => <div key={i}><b>{k}:</b> {Array.isArray(v) ? v.join(', ') : v.toString()}</div>)
-            : <div>{data}</div>
-        }
-      </div>
-    </MenuContainer>
-  );
-}
+const BrickContainer = styled.div`
+  position: absolute;
+  top: 10%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  z-index: 5;
+  padding: 0 20px;
+  box-sizing: border-box;
+  flex-wrap: wrap;
+  
+  @media (max-width: 768px) {
+    gap: 20px;
+    padding: 0 15px;
+  }
+  
+  @media (max-width: 480px) {
+    gap: 15px;
+    padding: 0 10px;
+    top: 15%;
+  }
+`;
 
-// --- Main Menu ---
-function MainMenu() {
-  const navigate = useNavigate();
-  const [selected, setSelected] = React.useState(0);
-  const btnRefs = React.useRef([]);
-  const addExplosion = useGameStore(state => state.addExplosion);
-  const [explosionTestActive, setExplosionTestActive] = React.useState(false);
-  const explosionIntervalRef = React.useRef(null);
+const Brick = styled.div`
+  font-size: 3em;
+  padding: 20px 40px;
+  border: 2px solid white;
+  border-radius: 5px;
+  cursor: pointer;
+  text-shadow: 2px 2px purple, -2px -2px lightblue;
+  background-color: rgba(0,0,0,0.6);
+  backdrop-filter: blur(2px);
+  transition: transform 0.2s ease-in-out, border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  
+  ${props => props.$isSelected && `
+    border-color: yellow;
+    box-shadow: 0 0 15px yellow, 0 0 25px orange;
+    transform: scale(1.05);
+  `}
 
-  // Keyboard navigation
-  React.useEffect(() => {
-    const handle = (e) => {
-      if (e.key === 'ArrowDown') {
-        setSelected((prev) => (prev + 1) % menuItems.length);
-      } else if (e.key === 'ArrowUp') {
-        setSelected((prev) => (prev - 1 + menuItems.length) % menuItems.length);
-      } else if (e.key === 'Enter') {
-        if (menuItems[selected].label === 'SKILLS') {
-          setExplosionTestActive(true);
-        }
-        navigate(menuItems[selected].route);
-      }
-    };
-    window.addEventListener('keydown', handle);
-    return () => window.removeEventListener('keydown', handle);
-  }, [selected, menuItems, navigate]);
+  &:hover {
+    transform: scale(1.05);
+  }
+  
+  @media (max-width: 768px) {
+    font-size: 2.5em;
+    padding: 15px 30px;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 2em;
+    padding: 10px 20px;
+  }
+`;
 
-  // Focus selected button for accessibility
-  React.useEffect(() => {
-    btnRefs.current[selected]?.focus();
-  }, [selected]);
+const NavButtonsContainer = styled.div`
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  display: flex;
+  gap: 10px;
 
-  // Explosion test effect
-  React.useEffect(() => {
-    if (explosionTestActive) {
-      explosionIntervalRef.current = setInterval(() => {
-        const x = Math.random() * (window.innerWidth - 128);
-        const y = Math.random() * (window.innerHeight - 128);
-        addExplosion(x, y);
-      }, 200);
-    } else if (explosionIntervalRef.current) {
-      clearInterval(explosionIntervalRef.current);
-      explosionIntervalRef.current = null;
+  .start-btn, .play-btn {
+    background-color: lightgray;
+    text-shadow: -1px -1px black, 1px 1px white;
+    color: gray;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 7px;
+    box-shadow: 0 .2em gray;
+    cursor: pointer;
+    font-family: "Press Start 2P", monospace;
+
+    &:active {
+      box-shadow: none;
+      position: relative;
+      top: .2em;
     }
-    return () => {
-      if (explosionIntervalRef.current) {
-        clearInterval(explosionIntervalRef.current);
-        explosionIntervalRef.current = null;
-      }
-    };
-  }, [explosionTestActive, addExplosion]);
+  }
+  .video-game-button {
+    background-color: lightgray;
+    text-shadow: -1px -1px black, 1px 1px white;
+    color: gray;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 7px;
+    box-shadow: 0 .2em gray;
+    cursor: pointer;
+    font-family: "Press Start 2P", monospace;
 
-  // Stop explosion test when navigating away
-  React.useEffect(() => {
-    return () => {
-      if (explosionIntervalRef.current) {
-        clearInterval(explosionIntervalRef.current);
-        explosionIntervalRef.current = null;
-      }
+    &:active {
+      box-shadow: none;
+      position: relative;
+      top: .2em;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    bottom: 15px;
+    left: 15px;
+    gap: 8px;
+    
+    .start-btn, .play-btn {
+      padding: 8px 16px;
+      font-size: 0.8em;
+    }
+    
+    .video-game-button {
+      padding: 8px 12px;
+      font-size: 0.8em;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    bottom: 10px;
+    left: 10px;
+    gap: 6px;
+    
+    .start-btn, .play-btn {
+      padding: 6px 12px;
+      font-size: 0.7em;
+    }
+    
+    .video-game-button {
+      padding: 6px 10px;
+      font-size: 0.7em;
+    }
+  }
+`;
+
+const HelperText = styled.div`
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  color: white;
+  font-family: "Press Start 2P", monospace;
+  font-size: 0.8em;
+  text-shadow: 2px 2px black;
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #fff;
+  
+  @media (max-width: 768px) {
+    top: 15px;
+    left: 15px;
+    font-size: 0.7em;
+    padding: 8px;
+  }
+  
+  @media (max-width: 480px) {
+    top: 10px;
+    left: 10px;
+    font-size: 0.6em;
+    padding: 6px;
+    max-width: 90%;
+  }
+`;
+
+const GamePage = styled.div`
+  width: 90%;
+  height: 90%;
+  background-image: url(${process.env.PUBLIC_URL}/game/bg_main_background.webp);
+  background-size: cover;
+  background-position: center;
+  padding: 20px;
+  overflow-y: auto;
+  border: 5px solid gray;
+  color: white;
+  font-size: 1.2em;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.7);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+  h1 {
+    text-align: center;
+    color: lime;
+    text-shadow: 2px 2px black;
+    margin-bottom: 20px;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  li {
+    margin-bottom: 10px;
+  }
+
+  a {
+    color: skyblue;
+  }
+
+  p {
+    margin-bottom: 10px;
+  }
+
+  h2, h3 {
+    color: #00ffff;
+    margin-top: 15px;
+    margin-bottom: 10px;
+  }
+`;
+
+const BackButton = styled.button`
+  background-color: lightgray;
+  text-shadow: -1px -1px black, 1px 1px white;
+  color: gray;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 7px;
+  box-shadow: 0 .2em gray;
+  cursor: pointer;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 20;
+
+  &:active {
+    box-shadow: none;
+    position: relative;
+    top: .2em;
+  }
+`;
+
+// Removed GameOverScreen as it's now part of Game.js
+
+// --- HomePage Component (Main Menu) ---
+const HomePage = () => {
+  const navigate = useNavigate();
+
+  const BRICK_KEYS = ['experience', 'skills', 'education', 'about'];
+  const [selectedBrickIndex, setSelectedBrickIndex] = useState(0);
+  const [jetX, setJetX] = useState(Math.max(50, Math.min(window.innerWidth - 340, window.innerWidth / 2 - 145))); // Center jet initially with bounds
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  const handleSelectClick = useCallback(() => {
+    setSelectedBrickIndex((prevIndex) => (prevIndex + 1) % (BRICK_KEYS?.length || 0));
+  }, [BRICK_KEYS?.length]);
+
+  const handleStartClick = useCallback(() => {
+    const selectedKey = BRICK_KEYS[selectedBrickIndex];
+    navigate(`/${selectedKey}`);
+  }, [selectedBrickIndex, BRICK_KEYS, navigate]);
+
+  const handlePlayGame = useCallback(() => {
+    setIsTransitioning(true);
+    // Animate jet to top of screen
+    setJetX(window.innerWidth / 2 - 145); // Keep centered
+    
+    // After animation, navigate to game
+    setTimeout(() => {
+      navigate('/game');
+    }, 1000); // 1 second animation
+  }, [navigate]);
+
+  // Handle window resize for jet positioning
+  useEffect(() => {
+    const handleResize = () => {
+      setJetX(prev => Math.max(50, Math.min(window.innerWidth - 340, prev)));
     };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-
-
-  return (
-    <div className="root" style={{
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: 'transparent'
-    }}>
-      <h1 style={{
-        color: '#0ff',
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: '2.5em',
-        marginBottom: 40,
-        textShadow: '0 0 8px #0ff, 0 0 16px #fff'
-      }}>
-        MY INTERACTIVE RESUME
-      </h1>
-      {menuItems.map((item, idx) => (
-        <button
-          key={item.label}
-          ref={el => btnRefs.current[idx] = el}
-          className={`retro-menu-btn${selected === idx ? ' selected' : ''}`}
-          tabIndex={0}
-          onClick={() => {
-            if (item.label === 'SKILLS') setExplosionTestActive(true);
-            navigate(item.route);
-          }}
-        >
-          {item.label}
-        </button>
-      ))}
-      <div style={{ marginTop: 40, color: '#fff', fontFamily: '"Press Start 2P", monospace', fontSize: '0.9em', opacity: 0.7 }}>
-        Use ↑/↓ to navigate, Enter to select
-      </div>
-    </div>
-  );
-}
-
-// --- Game Page ---
-function Game() {
-  const {
-    jetX,
-    bullets,
-    bricks,
-    explosions,
-    score,
-    gameOver,
-    moveJet,
-    fireBullet,
-    tick,
-    spawnBrick,
-    reset,
-    removeExplosion,
-    bonusActive,
-    missedBricks,
-  } = useGameStore();
-  const navigate = useNavigate();
-
-  // Game loop
+  // Keyboard controls for the main menu
   useEffect(() => {
-    if (gameOver) return;
-    const interval = setInterval(() => {
-      tick();
-    }, 16);
-    return () => clearInterval(interval);
-  }, [tick, gameOver]);
-
-  // Brick spawner
-  useEffect(() => {
-    if (gameOver) return;
-    const interval = setInterval(() => {
-      spawnBrick();
-    }, BRICK_SPAWN_INTERVAL_MS);
-    return () => clearInterval(interval);
-  }, [spawnBrick, gameOver]);
-
-  // Automatic bullet firing
-  useEffect(() => {
-    if (gameOver) return;
-    const interval = setInterval(() => {
-      fireBullet();
-    }, BULLET_FIRE_RATE_MS);
-    return () => clearInterval(interval);
-  }, [fireBullet, gameOver]);
-
-  // Keyboard controls
-  useEffect(() => {
-    const handle = (e) => {
-      if (gameOver) {
-        if (e.key === 'Enter') reset();
-        return;
+    const handleKeyDown = (e) => {
+      if (isTransitioning) return; // Disable controls during transition
+      
+      if (e.key === 'Enter') {
+        handleStartClick();
+      } else if (e.key === 'Shift') {
+        handleSelectClick();
+      } else if (e.key === 'p' || e.key === 'P') {
+        handlePlayGame();
+      } else if (e.key === 'ArrowLeft') {
+        setJetX(prev => Math.max(50, prev - 30));
+      } else if (e.key === 'ArrowRight') {
+        setJetX(prev => Math.min(window.innerWidth - 340, prev + 30));
       }
-      if (e.key === 'ArrowLeft') moveJet(-1);
-      if (e.key === 'ArrowRight') moveJet(1);
     };
-    window.addEventListener('keydown', handle);
-    return () => window.removeEventListener('keydown', handle);
-  }, [moveJet, reset, gameOver]);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleSelectClick, handleStartClick, handlePlayGame, isTransitioning]);
+
 
   return (
-    <div>
-      <h2 style={{
-        textAlign: 'center',
-        color: bonusActive ? '#ff0' : '#0ff',
-        position: 'absolute',
-        top: 32,
-        left: 0,
-        width: '100vw',
-        zIndex: 10,
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: '2.5em',
-        fontWeight: 'bold',
-        letterSpacing: '0.08em',
-        textShadow: bonusActive
-          ? '0 0 24px #ff0, 0 0 48px #fff, 0 0 16px #ff0'
-          : '0 0 12px #0ff, 0 0 32px #fff, 0 0 8px #0ff',
-        background: 'rgba(0,0,0,0.25)',
-        padding: '18px 0 10px 0',
-        margin: 0,
-        borderBottom: bonusActive ? '2px solid #ff0' : '2px solid #0ff',
-        boxShadow: bonusActive ? '0 2px 32px #ff0' : '0 2px 16px #0ff',
-      }}>
-        SCORE: {score} {bonusActive && <span style={{ color: '#ff0', marginLeft: 32, fontSize: '0.7em' }}>BONUS SPEED!</span>}
-        {gameOver && <span style={{ color: '#ff0044', marginLeft: 32 }}>GAME OVER!</span>}
-      </h2>
-      <GameArea>
-        <JetContainer x={jetX}>
-          <Jet />
-        </JetContainer>
-        {bullets.map((b) => (
-          <BulletStyled key={b.id} x={b.x} y={b.y} />
-        ))}
-        {bricks.map((br) => (
-          <BrickStyled key={br.id} x={br.x} y={br.y} type={br.type} />
-        ))}
-        {explosions.map((exp) => (
-          <Explosion
-            key={exp.id}
-            x={exp.x}
-            y={exp.y}
-            onAnimationComplete={() => removeExplosion(exp.id)}
-          />
-        ))}
-        {gameOver && (
-          <div style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100vw',
-            height: '100vh',
-            background: 'rgba(0,0,0,0.85)',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-          }}>
-            <div style={{
-              color: '#ff0044',
-              fontFamily: '"Press Start 2P", monospace',
-              fontSize: '4em',
-              textShadow: '0 0 16px #fff, 0 0 32px #ff0044',
-              marginBottom: 40,
-              fontWeight: 'bold',
-              letterSpacing: '0.1em',
-              textAlign: 'center',
-            }}>
-              GAME OVER
-            </div>
-            <button
-              className="retro-menu-btn"
-              style={{ fontSize: '1.5em', padding: '18px 60px', marginTop: 20 }}
-              onClick={() => { reset(); navigate('/'); }}
-            >
-              MAIN MENU
-            </button>
-          </div>
-        )}
-        <div style={{
-          position: 'absolute',
-          top: 32,
-          right: 32,
-          zIndex: 20,
-          display: 'flex',
-          gap: '16px',
-        }}>
-          {[0, 1, 2].map(i => (
-            <img
-              key={i}
-              src={process.env.PUBLIC_URL + '/game/bullet1.png'}
-              alt="life"
-              style={{
-                width: 48,
-                height: 48,
-                opacity: i < 3 - missedBricks ? 1 : 0.2,
-                filter: i < 3 - missedBricks ? 'drop-shadow(0 0 8px #ff0)' : 'grayscale(1)',
-                transition: 'opacity 0.3s',
-              }}
-            />
-          ))}
-        </div>
-      </GameArea>
-    </div>
-  );
-}
+    <GameContainer>
+      {!isTransitioning && (
+        <>
+          <HelperText>
+            ARROW KEYS: Move Jet | SHIFT: Select | P: Play Game
+          </HelperText>
+          
+          <BrickContainer>
+            { (Array.isArray(BRICK_KEYS) ? BRICK_KEYS : []).map((key, index) => (
+              <Brick
+                key={key}
+                $isSelected={index === selectedBrickIndex}
+              >
+                {key.charAt(0).toUpperCase() + key.slice(1)}
+              </Brick>
+            ))}
+          </BrickContainer>
 
-// --- Main App with Routing ---
+          <NavButtonsContainer>
+            <span className='video-game-button'>A</span>
+            <span className='video-game-button'>B</span>
+            <span className='start-btn' onClick={handleSelectClick}>SELECT</span>
+            <span className='start-btn' onClick={handleStartClick}>START</span>
+            <span className='play-btn' onClick={handlePlayGame}>PLAY</span>
+          </NavButtonsContainer>
+        </>
+      )}
+
+      {/* Jet positioned at bottom with margin/padding */}
+      <div style={{
+        position: 'absolute',
+        bottom: isTransitioning ? '100vh' : 120, // Fly to top when transitioning
+        left: jetX,
+        transform: isTransitioning ? 'translateY(-100%)' : 'none',
+        zIndex: 10,
+        transition: isTransitioning ? 'bottom 1s ease-in-out' : 'left 0.1s ease-out'
+      }}>
+        <Jet x={0} y={0} />
+      </div>
+    </GameContainer>
+  );
+};
+
+// --- Page Components (Unchanged) ---
+const ExperiencePage = () => {
+  const navigate = useNavigate();
+  return (
+    <GamePage>
+      <BackButton onClick={() => navigate('/')}>Back</BackButton>
+      <h1>Experience</h1>
+      {experience.map((job, index) => (
+        <div key={index}>
+          <h3>{job.title} at {job.company} ({job.period})</h3>
+          <ul>
+            {job.bullets.map((bullet, bIndex) => (
+              <li key={bIndex}>{bullet}</li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </GamePage>
+  );
+};
+
+const SkillsPage = () => {
+  const navigate = useNavigate();
+  return (
+    <GamePage>
+      <BackButton onClick={() => navigate('/')}>Back</BackButton>
+      <h1>Skills & Technologies</h1>
+      {skills.map((skillCat, index) => (
+        <div key={index}>
+          <h3>{skillCat.category}</h3>
+          <p>{skillCat.items.join(', ')}</p>
+        </div>
+      ))}
+    </GamePage>
+  );
+};
+
+const EducationPage = () => {
+  const navigate = useNavigate();
+  return (
+    <GamePage>
+      <BackButton onClick={() => navigate('/')}>Back</BackButton>
+      <h1>Education & Certifications</h1>
+      {education.map((edu, index) => (
+        <div key={index}>
+          <h3>{edu.degree} - {edu.institution} ({edu.period})</h3>
+        </div>
+      ))}
+      <h3>Certifications</h3>
+      <ul>
+        {certificates.map((cert, index) => (
+          <li key={index}>{cert}</li>
+        ))}
+      </ul>
+    </GamePage>
+  );
+};
+
+const AboutPage = () => {
+  const navigate = useNavigate();
+  return (
+    <GamePage>
+      <BackButton onClick={() => navigate('/')}>Back</BackButton>
+      <h1>About Me / Highlights</h1>
+      <h2>Profile Summary</h2>
+      <p>{profileSummary}</p>
+      <h2>Career Highlights</h2>
+      <ul>
+        {careerHighlights.map((highlight, index) => (
+          <li key={index}>{highlight}</li>
+        ))}
+      </ul>
+      <h2>Early Career</h2>
+      <ul>
+        {earlyCareer.map((item, index) => (
+          <li key={index}>{item.title} at {item.company} ({item.period}) - {item.bullets[0]}</li>
+        ))}
+      </ul>
+      <h2>Interests</h2>
+      <p>{interests.join(', ')}</p>
+      <h2>Contact</h2>
+      <ul>
+        <li>Email: {profile.email}</li>
+        <li>LinkedIn: <a href={profile.linkedin} target="_blank" rel="noopener noreferrer">{profile.linkedin}</a></li>
+        <li>GitHub: <a href={profile.github} target="_blank" rel="noopener noreferrer">{profile.github}</a></li>
+        {personalDetails.map((detail, index) => (
+          <li key={index}>{detail.label}: {detail.value}</li>
+        ))}
+      </ul>
+    </GamePage>
+  );
+};
+
+
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<MainMenu />} />
-        <Route path="/game" element={<Game />} />
-        <Route path="/resume/:section" element={<ResumeSectionRoute />} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/experience" element={<ExperiencePage />} />
+        <Route path="/skills" element={<SkillsPage />} />
+        <Route path="/education" element={<EducationPage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/game" element={<Game />} /> {/* New route for the game */}
       </Routes>
     </Router>
   );
-}
-
-// --- Resume Section Route Wrapper ---
-function ResumeSectionRoute() {
-  const { section } = useParams();
-  return <ResumeSectionPage section={section} />;
 }
 
 export default App;
