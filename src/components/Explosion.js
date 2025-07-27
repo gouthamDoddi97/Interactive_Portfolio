@@ -20,16 +20,14 @@ const explosionSpriteAnimation = keyframes`
 const ExplosionContainer = styled.div`
   width: ${EXPLOSION_FRAME_WIDTH}px;
   height: ${EXPLOSION_FRAME_HEIGHT}px;
-  background-image: url('/game/explosion.png');
-  background-size: auto ${EXPLOSION_FRAME_HEIGHT * EXPLOSION_ROWS}px; /* Scale background to fit all rows */
+           background-image: url('/Interactive_Portfolio/game/explosion.png');
+  background-size: ${EXPLOSION_FRAME_WIDTH * EXPLOSION_COLS}px ${EXPLOSION_FRAME_HEIGHT * EXPLOSION_ROWS}px;
   background-repeat: no-repeat;
   position: absolute;
   z-index: 15; /* Above other elements */
 
   /* Animation for the sprite sheet */
-  animation: playExplosionFrames 0.8s steps(${EXPLOSION_TOTAL_FRAMES}) forwards;
-  /* Adjust duration and steps based on how fast you want the explosion */
-  /* 'forwards' means it stays on the last frame after animation, then we'll remove it */
+  animation: playExplosionFrames 0.8s steps(${EXPLOSION_TOTAL_FRAMES}) forwards, fadeOutExplosion 0.2s 0.8s linear forwards;
 
   @keyframes playExplosionFrames {
     from { background-position: 0 0; }

@@ -4,11 +4,17 @@ body {
   background-color: black;
   font-family: 'Press Start 2p', monospace; /* Add a fallback font */
   margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background: #111 url('/public//game//bg_main_background.webp') center/cover;
+  padding: 0;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background: #111 url('/public//game//bg_main_background.webp') center/contain;
+}
+
+html {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
 }
 
 /* Allow scrolling for resume components */

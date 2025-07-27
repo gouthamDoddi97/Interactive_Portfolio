@@ -132,18 +132,7 @@ const HelperText = styled.div`
   border: 1px solid #fff;
   
   @media (max-width: 768px) {
-    top: 15px;
-    left: 15px;
-    font-size: 0.7em;
-    padding: 8px;
-  }
-  
-  @media (max-width: 480px) {
-    top: 10px;
-    left: 10px;
-    font-size: 0.6em;
-    padding: 6px;
-    max-width: 90%;
+    display: none !important; /* Hide helper text on mobile */
   }
 `;
 
@@ -239,3 +228,4 @@ const AboutMe = ({
 };
 
 export default AboutMe;
+ 
