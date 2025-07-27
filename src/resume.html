@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goutham Doddi - Resume</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Base Styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            color: #333;
+            font-size: 13px; /* Slightly smaller for density */
+        }
+
+        .container {
+            max-width: 900px; /* Wider to accommodate two columns */
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 30px; /* Slightly less padding */
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            display: grid;
+            grid-template-columns: 2fr 1fr; /* Two columns: 2/3 for left, 1/3 for right */
+            gap: 30px; /* Space between columns */
+        }
+
+        /* Header (Top of the Left Column) */
+        .header {
+            grid-column: 1 / 3; /* Spans both columns */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        /* Profile image placeholder (if user wants to add later) */
+        .profile-image-placeholder {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #ccc; /* Fallback background */
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 0.8em;
+            border: 2px solid #2c3e50; /* Border from template */
+            overflow: hidden; /* Ensures image stays within circle */
+        }
+        .profile-image-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures image fills the circle without distortion */
+        }
+
+        .header h1 {
+            font-size: 2.5em; /* Slightly smaller for two-column flow */
+            margin: 0;
+            color: #2c3e50;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            margin: 3px 0;
+            color: #555;
+            font-size: 1em;
+        }
+
+        .header a {
+            color: #007bff;
+            text-decoration: none;
+            margin: 0 8px;
+            transition: color 0.3s ease;
+        }
+
+        .header a:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+
+        /* Left Column Content */
+        .left-column {
+            grid-column: 1 / 2;
+        }
+
+        /* Right Column Content */
+        .right-column {
+            grid-column: 2 / 3;
+            padding-inline: 15px; /* Add some padding for visual separation */
+            border-left: 1px solid #eee; /* Light separator line */
+        }
+
+        /* Section Headings */
+        .section h2 {
+            font-size: 1.5em;
+            color: #2c3e50;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        /* Profile Summary (Right Column) */
+        .profile-summary p {
+            font-size: 1em;
+            color: #444;
+            line-height: 1.6;
+            text-align: justify;
+            margin-bottom: 20px;
+        }
+
+        /* Work Experience (Left Column) */
+        .job {
+            margin-bottom: 20px;
+            padding-left: 10px;
+            border-left: 3px solid #007bff; /* Accent border */
+        }
+
+        .job h3 {
+            font-size: 1.2em;
+            margin: 0 0 3px 0;
+            color: #34495e;
+            font-weight: 600;
+        }
+
+        .job p.meta {
+            font-size: 0.9em;
+            color: #777;
+            margin: 0 0 8px 0;
+        }
+
+        .job ul {
+            list-style: disc;
+            padding-left: 18px;
+            margin: 0;
+            color: #444;
+        }
+
+        .job ul li {
+            margin-bottom: 5px;
+            line-height: 1.4;
+        }
+
+        /* Skills (Right Column) */
+        .skills-category {
+            margin-bottom: 15px;
+        }
+
+        .skills-category h3 {
+            font-size: 1.05em;
+            color: #34495e;
+            margin: 0 0 6px 0;
+            font-weight: 500;
+        }
+
+        .skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px; /* Tighter gap for smaller tags */
+        }
+
+        .skill-tag {
+            background-color: #e9f5ff;
+            color: #007bff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.85em;
+            font-weight: 500;
+            border: 1px solid #cce5ff;
+        }
+
+        .details-tag {
+            background-color: #eef0ee;
+            color: #ab770e;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.85em;
+            font-weight: 500;
+            border: 1px solid #a9a41a;
+        }
+
+        /* Education (Right Column) */
+        .education-item {
+            margin-bottom: 15px;
+        }
+
+        .education-item h3 {
+            font-size: 1.1em;
+            margin: 0 0 3px 0;
+            color: #34495e;
+            font-weight: 600;
+        }
+
+        .education-item p {
+            margin: 0;
+            color: #555;
+            font-size: 0.9em;
+        }
+
+        /* Interests & Personal Details (Right Column) */
+        .interests ul, .personal-details ul {
+            list-style: none; /* No bullets */
+            padding: 0;
+            margin: 0;
+            color: #444;
+        }
+
+        .interests ul li, .personal-details ul li {
+            margin-bottom: 5px;
+            font-size: 0.95em;
+        }
+
+        /* Print Specific Styles */
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+                background-color: #fff;
+                font-size: 11px; /* Even smaller font for print */
+            }
+            .container {
+                box-shadow: none;
+                margin: 0;
+                padding: 15px; /* Reduced padding */
+                border-radius: 0;
+                width: 100%;
+                max-width: none;
+                grid-template-columns: 2.2fr 1fr; /* Adjust column ratio slightly for print */
+                gap: 20px;
+            }
+            .header {
+                margin-bottom: 15px;
+                padding-bottom: 10px;
+            }
+            .header h1 {
+                font-size: 2em;
+            }
+            .header p {
+                font-size: 0.95em;
+            }
+            .profile-image-placeholder {
+                width: 80px;
+                height: 80px;
+            }
+            .section {
+                margin-bottom: 15px;
+            }
+            .section h2 {
+                font-size: 1.3em;
+                margin-bottom: 10px;
+            }
+            .profile-summary p {
+                font-size: 0.95em;
+            }
+            .job {
+                margin-bottom: 15px;
+            }
+            .job h3 {
+                font-size: 1.05em;
+            }
+            .job p.meta {
+                font-size: 0.85em;
+            }
+            .job ul {
+                padding-left: 15px;
+            }
+            .job ul li {
+                margin-bottom: 3px;
+                font-size: 0.9em;
+            }
+            .skills-category h3 {
+                font-size: 1em;
+            }
+            .skill-tag {
+                padding: 3px 7px;
+                font-size: 0.8em;
+            }
+            .education-item h3 {
+                font-size: 1em;
+            }
+            .education-item p {
+                font-size: 0.85em;
+            }
+            .interests ul li, .personal-details ul li {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="profile-image-placeholder">
+                <img src="./MyPhoto.jpeg" alt="Goutham Doddi Profile Picture">
+            </div>
+            <h1>Goutham Doddi</h1>
+            <p>
+                +917981075481 | gouthamdoddi97@gmail.com |
+                <a href="https://www.linkedin.com/in/goutham-doddi-22441b138/" target="_blank">LinkedIn</a> |
+                <a href="https://github.com/GouthamDoddi" target="_blank">GitHub</a>
+            </p>
+            <p>Karama Center, Dubai, United Arab Emirates</p>
+        </header>
+
+        <div class="left-column">
+          <section class="section experience">
+              <h2>WORK EXPERIENCE</h2>
+
+              <div class="job">
+                  <h3>Backend Developer <br> Soul Trading LLC</h3>
+                  <p class="meta">Dubai, United Arab Emirates | Oct 2024 – Present</p>
+                  <ul>
+                      <li>Developed backend components for a high-performance online gaming platform, including payment gateway integrations, features for enhancing player engagement through an offers module, and systems to ensure fair-play outcomes.</li>
+                      <li>Successfully launched and maintained games featured on prominent sites like **Unicorn360** and **10cric**, significantly boosting platform visibility and user engagement, particularly through the offers module I developed.</li>
+                      <li>Architected and implemented new game instances using advanced design patterns (Strategy, Factory, Singleton, Decorator, Manager) and SOLID principles, drastically reducing code complexity and improving extensibility.</li>
+                      <li>Designed and optimized complex database solutions in PostgreSQL (Supabase) and MongoDB, leveraging Redis and MQTT for high-throughput, real-time game functionality.</li>
+                      <li>Proactively debugged live game issues, managed API updates, and ensured continuous platform stability and performance.</li>
+                  </ul>
+              </div>
+
+              <div class="job">
+                  <h3>Full Stack Software Engineer <br> Dhenusya Infotech</h3>
+                  <p class="meta">Visakhapatnam, India | Jan 2022 – Oct 2024</p>
+                  <ul>
+                      <li>Spearheaded the independent engineering of ShareYourTruck, a cross-platform mobile application, managing end-to-end frontend and backend development.</li>
+                      <li>Optimized development efficiency through serverless architecture and REST APIs (MongoAtlas), driving scalable solutions and integrating third-party APIs (Stripe, Calendly) via webhooks.</li>
+                      <li>Led and mentored a backend development team, ensuring adherence to industry best practices and facilitating seamless integration of Twilio and SendGrid.</li>
+                      <li>Pioneered Docker containerization for backend applications, streamlining deployment and enhancing scalability.</li>
+                      <li>Engineered and deployed dynamic dashboards and marketing tools (email, WhatsApp, SMS) for operational needs and campaign effectiveness, utilizing React, React Native, and TypeScript.</li>
+                      <li>Conducted comprehensive testing and quality assurance to ensure the reliability and performance of deployed solutions.</li>
+                      <li>Engineered high-performance backend systems using Rust and optimized ERP solutions with System Design strategies, drastically improving reporting efficiency.</li>
+                      <li>Reduced operational costs by implementing automated server and database backup scripts, while owning HRMS development for multiple clients.</li>
+                  </ul>
+              </div>
+
+              <div class="job">
+                  <h3>Product Developer <br> Apollo Tele Health</h3>
+                  <p class="meta">Hyderabad, India | Nov 2020 – Dec 2021</p>
+                  <ul>
+                      <li>Integrated into a small, agile development team, contributing significantly to an ERP software project's success.</li>
+                      <li>Utilized prior testing experience to identify and rectify issues such as missing migrations and sub-optimal code quality.</li>
+                      <li>Championed the development of comprehensive guidelines and an ER diagram to enhance software quality.</li>
+                      <li>Initiated proactive communication with management, advocating for software quality improvements and implementation.</li>
+                      <li>Played a pivotal role in the onboarding process by creating user-friendly screens for new registrants to the platform.</li>
+                      <li>Collaborated closely with the development team to ensure seamless integration of the dashboard with existing systems.</li>
+                      <li>Led the effort to improve code quality and system reliability through rigorous testing and quality assurance practices.</li>
+                  </ul>
+              </div>
+
+              <div class="job">
+                  <h3>Software Test Engineer <br> TeenagerStartups.com</h3>
+                  <p class="meta">Remote | Jan 2020 – Oct 2020</p>
+                  <ul>
+                      <li>Implemented comprehensive backend test cases using Django's unit test framework, enhancing software reliability.</li>
+                      <li>Conducted extensive frontend testing utilizing Selenium, ensuring applications were user-friendly and bug-free.</li>
+                      <li>Led the initiative to containerize the application using Docker and Docker Compose, facilitating smoother deployment.</li>
+                      <li>Established Continuous Integration (CI) pipelines in GitLab, improving development efficiency and product quality.</li>
+                      <li>Utilized BrowserStack and LambdaTest for browser compatibility testing, ensuring wide accessibility of web applications.</li>
+                      <li>Achieved an impressive 90% test coverage, significantly reducing the risk of defects in production environments.</li>
+                      <li>Applied a systematic approach to test planning, execution, and reporting, streamlining the testing process.</li>
+                      <li>Played a crucial role in the remote team, delivering high-quality testing services and supporting development efforts.</li>
+                  </ul>
+              </div>
+
+          </section>
+
+          <section class="section career-highlights">
+              <h2>CAREER HIGHLIGHTS</h2>
+              <ul>
+                  <li>Consistently one of the most productive employees at Dhenusya Infotech, rapidly building applications on short notice and working weekends to meet deadlines, contributing to a significant salary increase (over 150%) from probation to departure.</li>
+                  <li>Conducted Python and web development seminars, teaching 50-60 individuals at a local NGO's seminar hall, with one participant subsequently securing a job within Dhenusya Infotech.</li>
+                  <li>Independently developed a critical analytics dashboard for manpower requisition and COVID-19 vaccination statistics, which remains extensively used in Apollo Telehealth's internal ERP: <a href="https://rise.hng.co.in/" target="_blank">https://rise.hng.co.in/</a></li>
+                  <li>As the sole non-IT student on a team of IIT students at TeenagerStartups.com, actively contributed to improving code quality by ensuring adherence to PEP 8 guidelines and enhancing readability during unit test development, often praised by my IIT student colleagues for these contributions.</li>
+              </ul>
+          </section>
+
+          <section class="section early-career">
+              <h2>EARLY CAREER</h2>
+              <div class="job">
+                  <h3>Bartender <br> URU Brewpark</h3>
+                  <p class="meta">Bangalore, India | Jun 2018 – Oct 2018</p>
+                  <ul>
+                      <li>Trained in Flair and Mixology, developing extensive knowledge in the world of mixology.</li>
+                      <li>Actively participated in upselling and enhancing guest experience by sharing stories and insights behind drinks.</li>
+                      <li>Recognized by management for passion and dedication in the role.</li>
+                      <li>Transitioned from hospitality to software development after realizing analytical strengths were better suited for a long-term vision in programming.</li>
+                  </ul>
+              </div>
+          </section>
+      </div>
+
+      <div class="right-column">
+          <section class="section profile-summary">
+              <h2>PROFILE SUMMARY</h2>
+              <p>
+                  Passionate Python Software Engineer with over 5 years of experience, driven by a deep understanding of OOP principles and Low-Level Design. My unique background in hospitality honed my communication and problem-solving skills, which I now apply to my self-taught journey in programming. I began as a Test Engineer, fostering a strong foundation in Test-Driven Development (TDD) and robust coding practices, and specialize in building highly maintainable, scalable, and extensible code that strictly adheres to SOLID principles, ensuring minimal bugs and long-term reliability.
+              </p>
+          </section>
+
+          <section class="section skills">
+              <h2>TECHNICAL SKILLS</h2>
+              <div class="skills-category">
+                  <h3>Programming Languages:</h3>
+                  <div class="skills-list">
+                      <span class="skill-tag">Python</span>
+                      <span class="skill-tag">JavaScript</span>
+                      <span class="skill-tag">TypeScript</span>
+                      <span class="skill-tag">Rust</span>
+                  </div>
+              </div>
+              <div class="skills-category">
+                  <h3>Backend Technologies:</h3>
+                  <div class="skills-list">
+                      <span class="skill-tag">Django</span>
+                      <span class="skill-tag">Node.js</span>
+                      <span class="skill-tag">REST APIs</span>
+                      <span class="skill-tag">Serverless Architecture</span>
+                      <span class="skill-tag">PostgreSQL</span>
+                      <span class="skill-tag">MongoDB</span>
+                      <span class="skill-tag">Redis</span>
+                      <span class="skill-tag">MQTT</span>
+                      <span class="skill-tag">Stripe API</span>
+                      <span class="skill-tag">Twilio</span>
+                      <span class="skill-tag">SendGrid</span>
+                  </div>
+              </div>
+              <div class="skills-category">
+                  <h3>Frontend Technologies:</h3>
+                  <div class="skills-list">
+                      <span class="skill-tag">React</span>
+                      <span class="skill-tag">React Native</span>
+                      <span class="skill-tag">HTML5</span>
+                      <span class="skill-tag">CSS3</span>
+                  </div>
+              </div>
+              <div class="skills-category">
+                  <h3>DevOps & Tools:</h3>
+                  <div class="skills-list">
+                      <span class="skill-tag">Docker</span>
+                      <span class="skill-tag">Git</span>
+                      <span class="skill-tag">CI/CD Pipelines</span>
+                      <span class="skill-tag">Selenium</span>
+                      <span class="skill-tag">Unit Testing</span>
+                      <span class="skill-tag">Test-Driven Development (TDD)</span>
+                      <span class="skill-tag">BrowserStack</span>
+                      <span class="skill-tag">LambdaTest</span>
+                      <span class="skill-tag">Jira</span>
+                  </div>
+              </div>
+              <div class="skills-category">
+                  <h3>Cloud Platforms:</h3>
+                  <div class="skills-list">
+                      <span class="skill-tag">AWS</span>
+                      <span class="skill-tag">Google Cloud (GKE)</span>
+                      <span class="skill-tag">Supabase</span>
+                      <span class="skill-tag">MongoAtlas</span>
+                  </div>
+              </div>
+              <div class="skills-category">
+                  <h3>Design Principles:</h3>
+                  <div class="skills-list">
+                      <span class="skill-tag">OOP</span>
+                      <span class="skill-tag">Low-Level Design (LLD)</span>
+                      <span class="skill-tag">SOLID Principles</span>
+                      <span class="skill-tag">Design Patterns (Strategy, Factory, Singleton, Decorator, Manager)</span>
+                  </div>
+              </div>
+          </section>
+
+          <section class="section education">
+              <h2>EDUCATION</h2>
+              <div class="education-item">
+                  <h3>Hospitality Management</h3>
+                  <h4>Bharathiyar University | Visakhapatnam, India</h4>
+                  <p>Sep 2017 – Aug 2020</p>
+              </div>
+          </section>
+
+          <section class="section certificates">
+              <h2>CERTIFICATES & COURSES</h2>
+              <ul>
+                  <li>UI/UX Research at Google</li>
+                  <li>Test Driven Development with Django & Python at Udemy</li>
+                  <li>CS50 at Harvard</li>
+                  <li>Scalar (DSA and System Design)</li>
+              </ul>
+          </section>
+
+          <section class="section links">
+              <h2>LINKS</h2>
+              <ul>
+                  <li><a href="https://www.linkedin.com/in/goutham-doddi-22441b138/" target="_blank">LinkedIn Profile</a></li>
+                  <li><a href="https://github.com/GouthamDoddi" target="_blank">GitHub Profile</a></li>
+                  <li><a href="https://nfthub-git-master-gotham-zerns-projects.vercel.app/" target="_blank">48-Hour Coding Challenge (Animations)</a></li>
+              </ul>
+          </section>
+
+          <section class="section interests">
+              <h2>INTERESTS</h2>
+              <ul>
+                  <li>Tennis</li>
+                  <li>Music (Hobbyist Guitarist)</li>
+                  <li>MBTI (Psychology)</li>
+                  <li>Current Affairs (Geopolitics)</li>
+                  <li>Latest Obsession: Perfumes</li>
+              </ul>
+          </section>
+
+          <section class="section personal-details">
+              <h2>PERSONAL DETAILS</h2>
+              <ul>
+                  <!-- <li class="details-tag">Visa Status: Employment Visa</li> -->
+                  <li class="details-tag">Notice Period/Availability: 30 days / Available from August 21, 2025</li>
+                  <li class="details-tag">Nationality: Indian</li>
+                  <li class="details-tag">Marital Status: Single</li>
+                  <li class="details-tag">Languages: English (Fluent), Hindi, Telugu (Native), Russian (Can Read)</li>
+              </ul>
+          </section>
+
+          <section class="section reference">
+              <h2>REFERENCE</h2>
+              <p>Reference can be furnished upon request.</p>
+          </section>
+      </div>
+    </div>
+</body>
+</html>

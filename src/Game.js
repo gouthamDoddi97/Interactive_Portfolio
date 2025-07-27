@@ -19,6 +19,43 @@ const BULLET_WIDTH = 200;
 const BULLET_HEIGHT = 100;
 const FALLING_BRICK_WIDTH = 150;
 const FALLING_BRICK_HEIGHT = 150;
+
+// Responsive sizing functions
+const getJetWidth = () => {
+  if (window.innerWidth <= 480) return JET_WIDTH * 0.5;
+  if (window.innerWidth <= 768) return JET_WIDTH * 0.7;
+  return JET_WIDTH;
+};
+
+const getJetHeight = () => {
+  if (window.innerWidth <= 480) return JET_HEIGHT * 0.5;
+  if (window.innerWidth <= 768) return JET_HEIGHT * 0.7;
+  return JET_HEIGHT;
+};
+
+const getBulletWidth = () => {
+  if (window.innerWidth <= 480) return BULLET_WIDTH * 0.5;
+  if (window.innerWidth <= 768) return BULLET_WIDTH * 0.7;
+  return BULLET_WIDTH;
+};
+
+const getBulletHeight = () => {
+  if (window.innerWidth <= 480) return BULLET_HEIGHT * 0.5;
+  if (window.innerWidth <= 768) return BULLET_HEIGHT * 0.7;
+  return BULLET_HEIGHT;
+};
+
+const getBrickWidth = () => {
+  if (window.innerWidth <= 480) return FALLING_BRICK_WIDTH * 0.6;
+  if (window.innerWidth <= 768) return FALLING_BRICK_WIDTH * 0.8;
+  return FALLING_BRICK_WIDTH;
+};
+
+const getBrickHeight = () => {
+  if (window.innerWidth <= 480) return FALLING_BRICK_HEIGHT * 0.6;
+  if (window.innerWidth <= 768) return FALLING_BRICK_HEIGHT * 0.8;
+  return FALLING_BRICK_HEIGHT;
+};
 // Explosion dimensions from Explosion.js
 const EXPLOSION_FRAME_WIDTH = 128;
 const EXPLOSION_FRAME_HEIGHT = 171;
@@ -28,6 +65,8 @@ const GAME_WIDTH_PERCENT = 1.0; // 100% of viewport width
 const GAME_HEIGHT_PERCENT = 1.0; // 100% of viewport height
 
 const GAME_AREA_PADDING = 50;
+const GAME_AREA_PADDING_MOBILE = 20;
+const GAME_AREA_PADDING_SMALL = 10;
 const BRICK_SPAWN_INTERVAL_MS = 1500;
 const BRICK_SPEED = 6;
 const BULLET_SPEED = 18;
@@ -39,7 +78,7 @@ const useGameStore = create((set, get) => ({
   gameRenderWidth: window.innerWidth * GAME_WIDTH_PERCENT,
   gameRenderHeight: window.innerHeight * GAME_HEIGHT_PERCENT,
 
-  jetX: (window.innerWidth * GAME_WIDTH_PERCENT) / 2,
+  jetX: window.innerWidth / 2,
   bullets: [],
   bricks: [],
   explosions: [], // Add explosions to state
@@ -51,12 +90,21 @@ const useGameStore = create((set, get) => ({
   setGameDimensions: (width, height) => set({ gameRenderWidth: width, gameRenderHeight: height }),
 
   moveJet: (dir) =>
-    set((state) => ({
-      jetX: Math.max(
-        GAME_AREA_PADDING + JET_WIDTH / 2,
-        Math.min(state.gameRenderWidth - JET_WIDTH / 2 - GAME_AREA_PADDING, state.jetX + dir * 30)
-      ),
-    })),
+    set((state) => {
+      const isMobile = window.innerWidth <= 768;
+      const isSmall = window.innerWidth <= 480;
+      const padding = isSmall ? GAME_AREA_PADDING_SMALL : isMobile ? GAME_AREA_PADDING_MOBILE : GAME_AREA_PADDING;
+      const moveSpeed = isMobile ? 20 : 30;
+      const screenWidth = window.innerWidth;
+      const currentJetWidth = getJetWidth();
+      
+      return {
+        jetX: Math.max(
+          currentJetWidth / 2, // Left boundary: half jet width from left edge
+          Math.min(screenWidth - currentJetWidth / 2, state.jetX + dir * moveSpeed) // Right boundary: half jet width from right edge
+        ),
+      };
+    }),
 
   fireBullet: () => {
     const state = get();
@@ -72,7 +120,7 @@ const useGameStore = create((set, get) => ({
         ...state.bullets,
         {
           x: state.jetX, // Fire from jet center (bullet will be centered on this position)
-          y: JET_HEIGHT, // Initial Y for bullets, from bottom
+          y: getJetHeight(), // Initial Y for bullets, from bottom
           id: Date.now() + Math.random(),
         },
       ],
@@ -111,19 +159,19 @@ const useGameStore = create((set, get) => ({
 
     for (let brick of newBricks) {
       let hit = false;
-      // Bullet collision check (AABB)
-      for (let i = 0; i < filteredBullets.length; i++) {
-        const bullet = filteredBullets[i];
-        const bulletRect = { x: bullet.x, y: bullet.y, width: BULLET_WIDTH, height: BULLET_HEIGHT };
-        const brickRect = { x: brick.x, y: brick.y, width: FALLING_BRICK_WIDTH, height: FALLING_BRICK_HEIGHT };
-        if (AABB(bulletRect, brickRect)) {
+               // Bullet collision check (AABB)
+         for (let i = 0; i < filteredBullets.length; i++) {
+           const bullet = filteredBullets[i];
+           const bulletRect = { x: bullet.x, y: bullet.y, width: getBulletWidth(), height: getBulletHeight() };
+           const brickRect = { x: brick.x, y: brick.y, width: getBrickWidth(), height: getBrickHeight() };
+           if (AABB(bulletRect, brickRect)) {
           explosionSound.play(); // Play explosion sound
           // Add explosion at brick center
-          currentExplosions.push({
-            id: Date.now() + Math.random(),
-            x: brick.x + FALLING_BRICK_WIDTH / 2 - EXPLOSION_FRAME_WIDTH / 2,
-            y: brick.y + FALLING_BRICK_HEIGHT / 2 - EXPLOSION_FRAME_HEIGHT / 2,
-          });
+                         currentExplosions.push({
+                 id: Date.now() + Math.random(),
+                 x: brick.x + getBrickWidth() / 2 - EXPLOSION_FRAME_WIDTH / 2,
+                 y: brick.y + getBrickHeight() / 2 - EXPLOSION_FRAME_HEIGHT / 2,
+               });
           hit = true;
           if (brick.type === 'bonus') {
             // bonusTriggered = true; // This variable is not defined in the original code
@@ -134,8 +182,8 @@ const useGameStore = create((set, get) => ({
         }
       }
       if (!hit) {
-        // Check if brick escaped (below screen)
-        if (brick.y + FALLING_BRICK_HEIGHT <= 0) {
+                 // Check if brick escaped (below screen)
+         if (brick.y + getBrickHeight() <= 0) {
           newMissedBricks++;
           console.log('Brick escaped! Missed bricks:', newMissedBricks); // Debug log
         } else {
@@ -147,13 +195,13 @@ const useGameStore = create((set, get) => ({
     // Game over if any brick reaches jet
     // The jet is positioned at its center due to translateX(-50%), so jetX is the center
     const jetRect = { 
-      x: jetX - JET_WIDTH / 2, 
+      x: jetX - getJetWidth() / 2, 
       y: 0, 
-      width: JET_WIDTH, 
-      height: JET_HEIGHT 
+      width: getJetWidth(), 
+      height: getJetHeight() 
     };
     const brickHitsJet = filteredBricks.some(brick => {
-      const brickRect = { x: brick.x, y: brick.y, width: FALLING_BRICK_WIDTH, height: FALLING_BRICK_HEIGHT };
+      const brickRect = { x: brick.x, y: brick.y, width: getBrickWidth(), height: getBrickHeight() };
       const collision = AABB(brickRect, jetRect);
       if (collision) {
         console.log('Jet collision detected!', {
@@ -200,7 +248,7 @@ const useGameStore = create((set, get) => ({
 
         reset: () =>
         set((state) => ({
-          jetX: state.gameRenderWidth / 2, // Recalculate based on current render width
+          jetX: window.innerWidth / 2, // Center jet based on current window width
           bullets: [],
           bricks: [],
           explosions: [],
@@ -213,13 +261,13 @@ const useGameStore = create((set, get) => ({
 
 // --- Styled Components ---
 const GameArea = styled.div`
-  width: ${(props) => props.$gameWidth}px;
-  height: ${(props) => props.$gameHeight}px;
+  width: 100vw;
+  height: 100vh;
   background: #222 url(${process.env.PUBLIC_URL}/game/bg_main_background2.webp) center/cover;
   position: relative;
   overflow: hidden;
-  /* Removed margin for full screen */
   border: 4px solid #fff;
+  box-sizing: border-box;
   
   @media (max-width: 768px) {
     border: 2px solid #fff;
@@ -313,6 +361,8 @@ const ScoreDisplay = styled.div`
   }
 `;
 
+
+
 function Game() {
   const navigate = useNavigate(); // Initialize useNavigate hook
   const [gameStarted, setGameStarted] = useState(false);
@@ -341,14 +391,15 @@ function Game() {
   // Update game dimensions on mount and resize
   useEffect(() => {
     const updateDimensions = () => {
-      if (gameAreaRef.current) {
-        setGameDimensions(gameAreaRef.current.clientWidth, gameAreaRef.current.clientHeight);
-        // Reset jetX on resize to keep it centered
-        useGameStore.setState(state => ({ jetX: state.gameRenderWidth / 2 }));
-      }
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      setGameDimensions(width, height);
+      // Reset jetX on resize to keep it centered
+      useGameStore.setState(state => ({ jetX: width / 2 }));
     };
-    // Initial set. Use window.innerWidth/Height initially for calculation consistency.
-    setGameDimensions(window.innerWidth * GAME_WIDTH_PERCENT, window.innerHeight * GAME_HEIGHT_PERCENT);
+    
+    // Initial set
+    updateDimensions();
 
     window.addEventListener('resize', updateDimensions);
     return () => window.removeEventListener('resize', updateDimensions);
@@ -393,6 +444,11 @@ function Game() {
   // Keyboard controls
   useEffect(() => {
     const handle = (e) => {
+      if (e.key === 'Escape' && !gameOver && gameStarted) {
+        reset(); // Reset game state before navigating
+        navigate('/');
+        return;
+      }
       if (e.key === 'Enter' && gameOver) {
         reset();
         return;
@@ -416,11 +472,112 @@ function Game() {
     return () => window.removeEventListener('keydown', handle);
   }, [moveJet, reset, gameOver, fireBullet, navigate, gameStarted]); // Add navigate to dependency array
 
+  // Touch/Mouse controls for mobile
+  useEffect(() => {
+    if (gameOver || !gameStarted) return;
+
+    let isDragging = false;
+    let lastTouchX = 0;
+
+    const handleTouchStart = (e) => {
+      isDragging = true;
+      lastTouchX = e.touches[0].clientX;
+      e.preventDefault();
+    };
+
+    const handleTouchMove = (e) => {
+      if (!isDragging) return;
+      
+      const currentTouchX = e.touches[0].clientX;
+      const deltaX = currentTouchX - lastTouchX;
+      
+      if (Math.abs(deltaX) > 10) { // Minimum movement threshold
+        if (deltaX > 0) {
+          moveJet(1); // Move right
+        } else {
+          moveJet(-1); // Move left
+        }
+        lastTouchX = currentTouchX;
+      }
+      
+      e.preventDefault();
+    };
+
+    const handleTouchEnd = () => {
+      isDragging = false;
+    };
+
+    const handleMouseDown = (e) => {
+      isDragging = true;
+      lastTouchX = e.clientX;
+    };
+
+    const handleMouseMove = (e) => {
+      if (!isDragging) return;
+      
+      const currentX = e.clientX;
+      const deltaX = currentX - lastTouchX;
+      
+      if (Math.abs(deltaX) > 10) { // Minimum movement threshold
+        if (deltaX > 0) {
+          moveJet(1); // Move right
+        } else {
+          moveJet(-1); // Move left
+        }
+        lastTouchX = currentX;
+      }
+    };
+
+    const handleMouseUp = () => {
+      isDragging = false;
+    };
+
+    // Add event listeners for touch
+    document.addEventListener('touchstart', handleTouchStart, { passive: false });
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd);
+
+    // Add event listeners for mouse (for desktop testing)
+    document.addEventListener('mousedown', handleMouseDown);
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleTouchEnd);
+      document.removeEventListener('mousedown', handleMouseDown);
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [gameOver, gameStarted, moveJet]);
+
+
 
   return (
     // The GameArea itself will fill the screen based on its calculated width/height
-    <GameArea ref={gameAreaRef} $gameWidth={gameRenderWidth} $gameHeight={gameRenderHeight}>
+    <GameArea ref={gameAreaRef}>
       {!gameOver && <ScoreDisplay>Score: {score}</ScoreDisplay>}
+
+      {/* Helper text for controls */}
+      {!gameOver && (
+        <div style={{
+          position: 'absolute',
+          top: window.innerWidth <= 768 ? 24 : 32,
+          left: window.innerWidth <= 768 ? 24 : 32,
+          color: 'white',
+          fontFamily: '"Press Start 2P", monospace',
+          fontSize: window.innerWidth <= 480 ? '10px' : '12px',
+          textShadow: '2px 2px black',
+          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          padding: window.innerWidth <= 768 ? '8px' : '10px',
+          borderRadius: '5px',
+          border: '1px solid #fff',
+          zIndex: 20
+        }}>
+          {window.innerWidth <= 768 ? 'TOUCH: Drag to Move' : 'ESC: Back to Menu'}
+        </div>
+      )}
 
       <div style={{
         position: 'absolute',
@@ -461,12 +618,11 @@ function Game() {
       <div style={{
         position: 'absolute',
         left: jetX,
-        bottom: gameStarted ? 20 : '100vh', // Add 20px bottom margin in game
+        bottom: gameStarted ? (window.innerWidth <= 480 ? 10 : window.innerWidth <= 768 ? 15 : 20) : '100vh',
         transition: gameStarted ? 'bottom 0.5s ease-out' : 'none',
         zIndex: 10
       }}>
         <Jet x={0} y={0} />
-
       </div>
       {bullets.map((b) => (
         <Bullet key={b.id} startX={b.x} currentY={b.y} />
@@ -483,6 +639,64 @@ function Game() {
         />
       ))}
 
+      {/* Mobile Touch Controls */}
+      {!gameOver && gameStarted && window.innerWidth <= 768 && (
+        <div style={{
+          position: 'absolute',
+          bottom: 20,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          display: 'flex',
+          gap: 20,
+          zIndex: 30
+        }}>
+          <button
+            onClick={() => moveJet(-1)}
+            style={{
+              width: 60,
+              height: 60,
+              backgroundColor: 'rgba(0, 255, 0, 0.8)',
+              border: '3px solid #00ff00',
+              borderRadius: '50%',
+              color: 'white',
+              fontSize: '24px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 0 10px rgba(0, 255, 0, 0.5)',
+              userSelect: 'none',
+              touchAction: 'manipulation'
+            }}
+          >
+            ←
+          </button>
+          <button
+            onClick={() => moveJet(1)}
+            style={{
+              width: 60,
+              height: 60,
+              backgroundColor: 'rgba(0, 255, 0, 0.8)',
+              border: '3px solid #00ff00',
+              borderRadius: '50%',
+              color: 'white',
+              fontSize: '24px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 0 10px rgba(0, 255, 0, 0.5)',
+              userSelect: 'none',
+              touchAction: 'manipulation'
+            }}
+          >
+            →
+          </button>
+        </div>
+      )}
+
       {gameOver && (
         <GameOverScreen>
           <h1>GAME OVER!</h1>
@@ -490,6 +704,8 @@ function Game() {
           <button onClick={() => { reset(); navigate('/'); }}>MAIN MENU</button> {/* Now calls reset() */}
         </GameOverScreen>
       )}
+
+
     </GameArea>
   );
 }
@@ -497,8 +713,8 @@ function Game() {
 // Styled component for Bricks (remains similar)
 const BrickStyled = styled.div`
   position: absolute;
-  width: ${FALLING_BRICK_WIDTH}px;
-  height: ${FALLING_BRICK_HEIGHT}px;
+  width: ${(props) => getBrickWidth()}px;
+  height: ${(props) => getBrickHeight()}px;
   left: ${(props) => props.x}px;
   bottom: ${(props) => props.y}px;
   background: url(${process.env.PUBLIC_URL}/game/alien.gif) center/cover;

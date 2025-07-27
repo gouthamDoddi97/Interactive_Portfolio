@@ -28,6 +28,19 @@ const JetContainer = styled.div.attrs(props => ({
     from { background-position: 0 0; }
     to { background-position: 0 ${-(JET_FRAME_HEIGHT * JET_TOTAL_FRAMES)}px; }
   }
+  
+  /* Responsive sizing for mobile */
+  @media (max-width: 768px) {
+    width: ${JET_FRAME_WIDTH * 0.7}px;
+    height: ${JET_FRAME_HEIGHT * 0.7}px;
+    background-size: ${JET_FRAME_WIDTH * 0.7}px auto;
+  }
+  
+  @media (max-width: 480px) {
+    width: ${JET_FRAME_WIDTH * 0.5}px;
+    height: ${JET_FRAME_HEIGHT * 0.5}px;
+    background-size: ${JET_FRAME_WIDTH * 0.5}px auto;
+  }
 `;
 
 // Jet component now accepts x and y props

@@ -4,6 +4,11 @@ import styled from 'styled-components';
 // Removed Howl, Jet, Bullet, Explosion imports as game logic moved to Game.js
 import Game from './Game'; // Import the new Game component
 import Jet from './components/Jet'; // Import Jet component for main menu
+import WorkExperience from './components/WorkExperience';
+import Skills from './components/Skills';
+import AboutMe from './components/AboutMe';
+import Education from './components/Education';
+import html2pdf from 'html2pdf.js';
 
 import { profile, experience, skills, education, profileSummary, careerHighlights, earlyCareer, links, interests, personalDetails, certificates } from './resumeData';
 
@@ -21,6 +26,29 @@ const GameContainer = styled.div`
   background-position: center;
   position: relative;
   overflow: hidden;
+  color: white;
+  font-family: "Press Start 2P", monospace;
+  
+  @media (max-width: 768px) {
+    font-size: 0.8em;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 0.6em;
+  }
+`;
+
+const ResumeContainer = styled.div`
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background-image: url(${process.env.PUBLIC_URL}/game/bg_main_background2.webp);
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: auto;
   color: white;
   font-family: "Press Start 2P", monospace;
   
@@ -94,73 +122,96 @@ const NavButtonsContainer = styled.div`
   bottom: 20px;
   left: 20px;
   display: flex;
-  gap: 10px;
-
-  .start-btn, .play-btn {
-    background-color: lightgray;
-    text-shadow: -1px -1px black, 1px 1px white;
-    color: gray;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 7px;
-    box-shadow: 0 .2em gray;
-    cursor: pointer;
-    font-family: "Press Start 2P", monospace;
-
-    &:active {
-      box-shadow: none;
-      position: relative;
-      top: .2em;
-    }
-  }
-  .video-game-button {
-    background-color: lightgray;
-    text-shadow: -1px -1px black, 1px 1px white;
-    color: gray;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 7px;
-    box-shadow: 0 .2em gray;
-    cursor: pointer;
-    font-family: "Press Start 2P", monospace;
-
-    &:active {
-      box-shadow: none;
-      position: relative;
-      top: .2em;
-    }
-  }
+  gap: 15px;
+  align-items: center;
+  z-index: 5;
   
   @media (max-width: 768px) {
+    gap: 12px;
     bottom: 15px;
     left: 15px;
-    gap: 8px;
-    
-    .start-btn, .play-btn {
-      padding: 8px 16px;
-      font-size: 0.8em;
-    }
-    
-    .video-game-button {
-      padding: 8px 12px;
-      font-size: 0.8em;
-    }
   }
   
   @media (max-width: 480px) {
+    gap: 10px;
     bottom: 10px;
     left: 10px;
-    gap: 6px;
+  }
+`;
+
+const RetroButton = styled.button`
+  background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+  border: 2px solid #00ffff;
+  border-radius: 8px;
+  color: #00ffff;
+  font-family: "Press Start 2P", monospace;
+  font-size: 0.8em;
+  padding: 12px 20px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 
+    0 0 10px rgba(0, 255, 255, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+  }
+  
+  &:hover {
+    background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
+    border-color: #00ff00;
+    color: #00ff00;
+    box-shadow: 
+      0 0 20px rgba(0, 255, 255, 0.8),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
     
-    .start-btn, .play-btn {
-      padding: 6px 12px;
-      font-size: 0.7em;
+    &::before {
+      left: 100%;
     }
-    
-    .video-game-button {
-      padding: 6px 10px;
-      font-size: 0.7em;
-    }
+  }
+  
+  &:active {
+    transform: translateY(0);
+    box-shadow: 
+      0 0 10px rgba(0, 255, 255, 0.5),
+      inset 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  
+  @media (max-width: 768px) {
+    font-size: 0.7em;
+    padding: 10px 16px;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 0.6em;
+    padding: 8px 12px;
+  }
+`;
+
+const PlayButton = styled(RetroButton)`
+  background: linear-gradient(145deg, #1a3a1a, #0a2a0a);
+  border-color: #00ff00;
+  color: #00ff00;
+  
+  &:hover {
+    background: linear-gradient(145deg, #2a4a2a, #1a3a1a);
+    border-color: #00ff00;
+    color: #00ff00;
+    box-shadow: 
+      0 0 20px rgba(0, 255, 0, 0.8),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
   }
 `;
 
@@ -193,73 +244,7 @@ const HelperText = styled.div`
   }
 `;
 
-const GamePage = styled.div`
-  width: 90%;
-  height: 90%;
-  background-image: url(${process.env.PUBLIC_URL}/game/bg_main_background.webp);
-  background-size: cover;
-  background-position: center;
-  padding: 20px;
-  overflow-y: auto;
-  border: 5px solid gray;
-  color: white;
-  font-size: 1.2em;
-  box-shadow: 0 0 20px rgba(0, 255, 255, 0.7);
-  display: flex;
-  flex-direction: column;
-  position: relative;
 
-  h1 {
-    text-align: center;
-    color: lime;
-    text-shadow: 2px 2px black;
-    margin-bottom: 20px;
-  }
-
-  ul {
-    list-style: none;
-    padding: 0;
-  }
-
-  li {
-    margin-bottom: 10px;
-  }
-
-  a {
-    color: skyblue;
-  }
-
-  p {
-    margin-bottom: 10px;
-  }
-
-  h2, h3 {
-    color: #00ffff;
-    margin-top: 15px;
-    margin-bottom: 10px;
-  }
-`;
-
-const BackButton = styled.button`
-  background-color: lightgray;
-  text-shadow: -1px -1px black, 1px 1px white;
-  color: gray;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 7px;
-  box-shadow: 0 .2em gray;
-  cursor: pointer;
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  z-index: 20;
-
-  &:active {
-    box-shadow: none;
-    position: relative;
-    top: .2em;
-  }
-`;
 
 // Removed GameOverScreen as it's now part of Game.js
 
@@ -292,6 +277,45 @@ const HomePage = () => {
     }, 1000); // 1 second animation
   }, [navigate]);
 
+  const handleDownloadResume = useCallback(async () => {
+    try {
+      // Fetch the resume HTML file
+      const response = await fetch('/resume.html');
+      const htmlContent = await response.text();
+      
+      // Create a temporary div to hold the HTML content
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = htmlContent;
+      document.body.appendChild(tempDiv);
+      
+      // Configure PDF options
+      const opt = {
+        margin: 0.5,
+        filename: 'Goutham_Doddi_Resume.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+          scale: 2,
+          useCORS: true,
+          allowTaint: true
+        },
+        jsPDF: { 
+          unit: 'in', 
+          format: 'a4', 
+          orientation: 'portrait' 
+        }
+      };
+      
+      // Generate and download PDF
+      await html2pdf().from(tempDiv).set(opt).save();
+      
+      // Clean up
+      document.body.removeChild(tempDiv);
+    } catch (error) {
+      console.error('Error downloading resume:', error);
+      alert('Error downloading resume. Please try again.');
+    }
+  }, []);
+
   // Handle window resize for jet positioning
   useEffect(() => {
     const handleResize = () => {
@@ -312,6 +336,8 @@ const HomePage = () => {
         handleSelectClick();
       } else if (e.key === 'p' || e.key === 'P') {
         handlePlayGame();
+      } else if (e.key === 'd' || e.key === 'D') {
+        handleDownloadResume();
       } else if (e.key === 'ArrowLeft') {
         setJetX(prev => Math.max(50, prev - 30));
       } else if (e.key === 'ArrowRight') {
@@ -330,7 +356,7 @@ const HomePage = () => {
       {!isTransitioning && (
         <>
           <HelperText>
-            ARROW KEYS: Move Jet | SHIFT: Select | P: Play Game
+            ARROW KEYS: Move Jet | SHIFT: Select | P: Play Game | D: Download Resume
           </HelperText>
           
           <BrickContainer>
@@ -345,11 +371,10 @@ const HomePage = () => {
           </BrickContainer>
 
           <NavButtonsContainer>
-            <span className='video-game-button'>A</span>
-            <span className='video-game-button'>B</span>
-            <span className='start-btn' onClick={handleSelectClick}>SELECT</span>
-            <span className='start-btn' onClick={handleStartClick}>START</span>
-            <span className='play-btn' onClick={handlePlayGame}>PLAY</span>
+            <RetroButton onClick={handleSelectClick}>SELECT</RetroButton>
+            <RetroButton onClick={handleStartClick}>START</RetroButton>
+            <PlayButton onClick={handlePlayGame}>PLAY</PlayButton>
+            <RetroButton onClick={handleDownloadResume}>DOWNLOAD</RetroButton>
           </NavButtonsContainer>
         </>
       )}
@@ -369,96 +394,43 @@ const HomePage = () => {
   );
 };
 
-// --- Page Components (Unchanged) ---
+// --- Page Components using new components ---
 const ExperiencePage = () => {
-  const navigate = useNavigate();
   return (
-    <GamePage>
-      <BackButton onClick={() => navigate('/')}>Back</BackButton>
-      <h1>Experience</h1>
-      {experience.map((job, index) => (
-        <div key={index}>
-          <h3>{job.title} at {job.company} ({job.period})</h3>
-          <ul>
-            {job.bullets.map((bullet, bIndex) => (
-              <li key={bIndex}>{bullet}</li>
-            ))}
-          </ul>
-        </div>
-      ))}
-    </GamePage>
+    <ResumeContainer>
+      <WorkExperience experience={experience} />
+    </ResumeContainer>
   );
 };
 
 const SkillsPage = () => {
-  const navigate = useNavigate();
   return (
-    <GamePage>
-      <BackButton onClick={() => navigate('/')}>Back</BackButton>
-      <h1>Skills & Technologies</h1>
-      {skills.map((skillCat, index) => (
-        <div key={index}>
-          <h3>{skillCat.category}</h3>
-          <p>{skillCat.items.join(', ')}</p>
-        </div>
-      ))}
-    </GamePage>
+    <ResumeContainer>
+      <Skills skills={skills} />
+    </ResumeContainer>
   );
 };
 
 const EducationPage = () => {
-  const navigate = useNavigate();
   return (
-    <GamePage>
-      <BackButton onClick={() => navigate('/')}>Back</BackButton>
-      <h1>Education & Certifications</h1>
-      {education.map((edu, index) => (
-        <div key={index}>
-          <h3>{edu.degree} - {edu.institution} ({edu.period})</h3>
-        </div>
-      ))}
-      <h3>Certifications</h3>
-      <ul>
-        {certificates.map((cert, index) => (
-          <li key={index}>{cert}</li>
-        ))}
-      </ul>
-    </GamePage>
+    <ResumeContainer>
+      <Education education={education} certificates={certificates} />
+    </ResumeContainer>
   );
 };
 
 const AboutPage = () => {
-  const navigate = useNavigate();
   return (
-    <GamePage>
-      <BackButton onClick={() => navigate('/')}>Back</BackButton>
-      <h1>About Me / Highlights</h1>
-      <h2>Profile Summary</h2>
-      <p>{profileSummary}</p>
-      <h2>Career Highlights</h2>
-      <ul>
-        {careerHighlights.map((highlight, index) => (
-          <li key={index}>{highlight}</li>
-        ))}
-      </ul>
-      <h2>Early Career</h2>
-      <ul>
-        {earlyCareer.map((item, index) => (
-          <li key={index}>{item.title} at {item.company} ({item.period}) - {item.bullets[0]}</li>
-        ))}
-      </ul>
-      <h2>Interests</h2>
-      <p>{interests.join(', ')}</p>
-      <h2>Contact</h2>
-      <ul>
-        <li>Email: {profile.email}</li>
-        <li>LinkedIn: <a href={profile.linkedin} target="_blank" rel="noopener noreferrer">{profile.linkedin}</a></li>
-        <li>GitHub: <a href={profile.github} target="_blank" rel="noopener noreferrer">{profile.github}</a></li>
-        {personalDetails.map((detail, index) => (
-          <li key={index}>{detail.label}: {detail.value}</li>
-        ))}
-      </ul>
-    </GamePage>
+    <ResumeContainer>
+      <AboutMe 
+        profileSummary={profileSummary}
+        careerHighlights={careerHighlights}
+        earlyCareer={earlyCareer}
+        interests={interests}
+        profile={profile}
+        personalDetails={personalDetails}
+      />
+    </ResumeContainer>
   );
 };
 

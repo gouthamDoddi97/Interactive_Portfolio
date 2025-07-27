@@ -17,6 +17,17 @@ position: absolute;
 transform: translateX(-50%); /* Center horizontally based on startX */
 opacity: 1;
 z-index: 99; /* TEMPORARY: High z-index to ensure visibility */
+
+/* Responsive sizing for mobile */
+@media (max-width: 768px) {
+  width: 140px;
+  height: 70px;
+}
+
+@media (max-width: 480px) {
+  width: 100px;
+  height: 50px;
+}
 `;
 
 const Bullet = ({ id, startX, currentY }) => {

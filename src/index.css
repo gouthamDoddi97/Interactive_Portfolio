@@ -3,13 +3,17 @@
 body {
   background-color: black;
   font-family: 'Press Start 2p', monospace; /* Add a fallback font */
-  overflow: hidden; /* Prevent scrollbars due to animations */
   margin: 0;
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   background: #111 url('/public//game//bg_main_background.webp') center/cover;
+}
+
+/* Allow scrolling for resume components */
+.resume-component {
+  overflow: auto !important;
 }
 
 /* Your provided button CSS (no changes needed here unless they use public images) */
