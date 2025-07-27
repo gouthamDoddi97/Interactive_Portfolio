@@ -1,46 +1,38 @@
 import React, { useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 
-const EXPLOSION_FRAME_WIDTH = 128; // From your analysis
-const EXPLOSION_FRAME_HEIGHT = 171; // From your analysis (1024 / 6 rounded)
-const EXPLOSION_TOTAL_FRAMES = 2; // From your analysis
+const EXPLOSION_FRAME_WIDTH = 128;
+const EXPLOSION_FRAME_HEIGHT = 171;
+const EXPLOSION_TOTAL_FRAMES = 2; // Total frames in the sprite sheet
 const EXPLOSION_COLS = 8;
-const EXPLOSION_ROWS = 6; // Used for calculation if needed, but steps handles it
+const EXPLOSION_ROWS = 6;
 
-// Keyframes for explosion sprite animation
-const explosionSpriteAnimation = keyframes`
+// Optimized keyframes for smoother animation
+const explosionAnimation = keyframes`
   from { background-position: 0 0; }
-  to { background-position: ${-(EXPLOSION_FRAME_WIDTH * EXPLOSION_COLS)}px ${-(EXPLOSION_FRAME_HEIGHT * EXPLOSION_ROWS)}px; }
-  /* This 'to' needs to be precise for a grid. It should go to the end of the last frame.
-     A simpler approach for sequential steps is to simply use the total width/height of the sprite sheet
-     and let steps() handle the individual frames. */
-     /* Let's refine this to move across the entire sprite sheet */
+  to { background-position: -${EXPLOSION_FRAME_WIDTH * EXPLOSION_COLS}px -${EXPLOSION_FRAME_HEIGHT * EXPLOSION_ROWS}px; }
 `;
 
 const ExplosionContainer = styled.div`
   width: ${EXPLOSION_FRAME_WIDTH}px;
   height: ${EXPLOSION_FRAME_HEIGHT}px;
-           background-image: url('/Interactive_Portfolio/game/explosion.png');
+  background-image: url('/Interactive_Portfolio/game/explosion.png');
   background-size: ${EXPLOSION_FRAME_WIDTH * EXPLOSION_COLS}px ${EXPLOSION_FRAME_HEIGHT * EXPLOSION_ROWS}px;
   background-repeat: no-repeat;
   position: absolute;
-  z-index: 15; /* Above other elements */
+  z-index: 15;
+  transform: translateX(-50%); /* Center the explosion */
 
-  /* Animation for the sprite sheet */
-  animation: playExplosionFrames 0.8s steps(${EXPLOSION_TOTAL_FRAMES}) forwards, fadeOutExplosion 0.2s 0.8s linear forwards;
-
-  @keyframes playExplosionFrames {
-    from { background-position: 0 0; }
-    to { background-position: -${EXPLOSION_FRAME_WIDTH * EXPLOSION_COLS}px -${EXPLOSION_FRAME_HEIGHT * EXPLOSION_ROWS}px; }
-  }
+  /* Faster, smoother animation */
+  animation: ${explosionAnimation} 0.4s steps(${EXPLOSION_TOTAL_FRAMES}) forwards;
 `;
 
 const Explosion = ({ x, y, onAnimationComplete }) => {
   useEffect(() => {
-    // Automatically remove explosion after animation
+    // Faster cleanup - reduced from 800ms to 400ms
     const timer = setTimeout(() => {
       onAnimationComplete();
-    }, 800); // Match animation duration
+    }, 400); // Match the faster animation duration
     return () => clearTimeout(timer);
   }, [onAnimationComplete]);
 

@@ -5,6 +5,7 @@ import { Howl } from 'howler';
 import Jet from './components/Jet';
 import Bullet from './components/Bullet';
 import Explosion from './components/Explosion';
+import getTauntMessage from './utils/taunts';
 
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
@@ -92,9 +93,6 @@ const jetEngineSound = new Howl({
 });
 
 
-
-
-
 // --- Game Constants ---
 const JET_WIDTH = 290;
 const JET_HEIGHT = 130;
@@ -159,6 +157,8 @@ const BRICK_COUNT_INCREASE_INTERVAL = 15000; // Increase brick count every 15 se
 const MAX_BRICKS_PER_SPAWN = 5; // Maximum number of bricks to spawn simultaneously
 const BULLET_SPEED = 18;
 const BULLET_FIRE_RATE_MS = 200;
+
+// Taunt messages are now imported from utils/taunts.js
 
 // --- Zustand Store ---
 const useGameStore = create((set, get) => ({
@@ -423,6 +423,9 @@ const GameArea = styled.div`
   overflow: hidden;
   border: 4px solid #fff;
   box-sizing: border-box;
+;
+
+
   
   @media (max-width: 768px) {
     border: 2px solid #fff;
@@ -453,7 +456,7 @@ const GameOverScreen = styled.div`
   button {
     margin-top: 30px;
     padding: 15px 30px;
-    font-size: 1.5em;
+    font-size: 0.5em;
     background-color: lime;
     color: black;
     border: 2px solid darkgreen;
@@ -521,6 +524,12 @@ const ScoreDisplay = styled.div`
 function Game({ globalSoundEnabled = true, gameSoundEnabled = true }) {
   const navigate = useNavigate(); // Initialize useNavigate hook
   const [gameStarted, setGameStarted] = useState(false);
+  const [tauntMessage, setTauntMessage] = useState('');
+  const [lastArrowPress, setLastArrowPress] = useState({ key: null, time: 0 });
+  const [isDashing, setIsDashing] = useState(false);
+  const [jumpScareActive, setJumpScareActive] = useState(false);
+  const [collisionDetected, setCollisionDetected] = useState(false);
+  const [selectedAlien, setSelectedAlien] = useState('alien.gif');
 
   
   // Update global sound state
@@ -528,8 +537,6 @@ function Game({ globalSoundEnabled = true, gameSoundEnabled = true }) {
     // Update the global variable with the prop value
     window.globalSoundEnabled = globalSoundEnabled;
   }, [globalSoundEnabled]);
-
-
 
   const {
     jetX,
@@ -549,6 +556,82 @@ function Game({ globalSoundEnabled = true, gameSoundEnabled = true }) {
     handleExplosionAnimationComplete,
     missedBricks,
   } = useGameStore();
+
+  // Set taunt message when game over occurs
+  useEffect(() => {
+    if (gameOver && !tauntMessage) {
+      setTauntMessage(getTauntMessage(score));
+    }
+  }, [gameOver, score, tauntMessage]);
+
+  // Clear taunt message when game resets (gameOver becomes false)
+  useEffect(() => {
+    if (!gameOver) {
+      setTauntMessage('');
+      setCollisionDetected(false); // Reset collision detection
+    }
+  }, [gameOver]);
+
+  // Watch for collision and trigger jump scare
+  useEffect(() => {
+    if (gameOver && !collisionDetected) {
+      setCollisionDetected(true);
+      triggerJumpScare();
+    }
+  }, [gameOver]);
+
+  // Handle dash functionality
+  const handleDash = useCallback((direction) => {
+    const now = Date.now();
+    const DOUBLE_CLICK_TIME = 300; // 300ms for double click detection
+    
+    if (lastArrowPress.key === direction && (now - lastArrowPress.time) < DOUBLE_CLICK_TIME) {
+      // Double click detected - activate dash
+      setIsDashing(true);
+      setLastArrowPress({ key: null, time: 0 }); // Reset for next double click
+      
+      // Dash effect - move jet multiple times quickly
+      const dashSteps = 5;
+      const dashInterval = setInterval(() => {
+        moveJet(direction);
+      }, 16); // ~60fps for smooth dash
+      
+      // Stop dash after brief duration
+      setTimeout(() => {
+        clearInterval(dashInterval);
+        setIsDashing(false);
+      }, 200); // 200ms dash duration
+      
+    } else {
+      // Single click - normal movement
+      setLastArrowPress({ key: direction, time: now });
+      moveJet(direction);
+    }
+  }, [lastArrowPress, moveJet]);
+
+  // Jump scare effect on crash
+  const triggerJumpScare = () => {
+    // Randomly select an alien for this jump scare
+    const aliens = ['alien.gif', 'alien2.gif', 'alien3.gif'];
+    const randomAlien = aliens[Math.floor(Math.random() * aliens.length)];
+    setSelectedAlien(randomAlien);
+    
+    setJumpScareActive(true);
+    
+    // Play crash sound
+    if (soundEnabled && window.globalSoundEnabled) {
+      try {
+        crashSound.play();
+      } catch (error) {
+        console.log('Could not play crash sound:', error);
+      }
+    }
+    
+    // Brief jump scare effect
+    setTimeout(() => {
+      setJumpScareActive(false);
+    }, 1000); // 1000ms jump scare duration for alien animation
+  };
 
   const gameAreaRef = React.useRef(null);
 
@@ -573,6 +656,8 @@ function Game({ globalSoundEnabled = true, gameSoundEnabled = true }) {
   useEffect(() => {
     const timer = setTimeout(() => {
       setGameStarted(true);
+      // Reset taunt message when starting new game
+      setTauntMessage('');
       // Jet engine sound disabled by default
       // if (gameSoundEnabled && window.globalSoundEnabled) {
       //   try {
@@ -644,8 +729,8 @@ function Game({ globalSoundEnabled = true, gameSoundEnabled = true }) {
         return;
       }
       if (!gameOver && gameStarted) {
-          if (e.key === 'ArrowLeft') moveJet(-1);
-          if (e.key === 'ArrowRight') moveJet(1);
+          if (e.key === 'ArrowLeft') handleDash(-1);
+          if (e.key === 'ArrowRight') handleDash(1);
           if (e.key === ' ') { // Space bar for firing
             e.preventDefault(); // Prevent page scrolling
             fireBullet();
@@ -658,7 +743,7 @@ function Game({ globalSoundEnabled = true, gameSoundEnabled = true }) {
     };
     window.addEventListener('keydown', handle);
     return () => window.removeEventListener('keydown', handle);
-  }, [moveJet, reset, gameOver, fireBullet, navigate, gameStarted]); // Add navigate to dependency array
+  }, [moveJet, reset, gameOver, fireBullet, navigate, gameStarted, handleDash]); // Add navigate to dependency array
 
   // Touch/Mouse controls for mobile
   useEffect(() => {
@@ -744,7 +829,74 @@ function Game({ globalSoundEnabled = true, gameSoundEnabled = true }) {
 
   return (
     // The GameArea itself will fill the screen based on its calculated width/height
-    <GameArea ref={gameAreaRef}>
+    <>
+      {jumpScareActive && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            background: 'rgba(0, 0, 0, 0.9)',
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            pointerEvents: 'none'
+          }}
+        >
+          <div
+            style={{
+              width: '100vw',
+              height: '100vh',
+              background: `url(${process.env.PUBLIC_URL}/game/${selectedAlien}) center/contain no-repeat`,
+              animation: 'alienJumpScare 1s ease-in-out forwards',
+              transform: 'rotate(0deg)',
+              filter: 'brightness(1.2) contrast(1.3)',
+            }}
+          />
+          <style>
+            {`
+              @keyframes alienJumpScare {
+                0% {
+                  transform: scale(0.1) rotate(0deg);
+                  opacity: 0;
+                }
+                15% {
+                  transform: scale(0.3) rotate(180deg);
+                  opacity: 0.8;
+                }
+                30% {
+                  transform: scale(0.6) rotate(360deg);
+                  opacity: 1;
+                }
+                45% {
+                  transform: scale(0.9) rotate(540deg);
+                  opacity: 1;
+                }
+                60% {
+                  transform: scale(1.1) rotate(720deg);
+                  opacity: 1;
+                }
+                70% {
+                  transform: scale(1.5) rotate(900deg);
+                  opacity: 1;
+                }
+                85% {
+                  transform: scale(1.5) rotate(900deg);
+                  opacity: 1;
+                }
+                100% {
+                  transform: scale(1.5) rotate(900deg);
+                  opacity: 0;
+                }
+              }
+            `}
+          </style>
+        </div>
+      )}
+      <GameArea ref={gameAreaRef}>
       {!gameOver && <ScoreDisplay>Score: {score}</ScoreDisplay>}
 
       {/* Sound Toggle Button - Speaker Icon - Desktop Only */}
@@ -846,13 +998,31 @@ function Game({ globalSoundEnabled = true, gameSoundEnabled = true }) {
       {gameOver && (
         <GameOverScreen>
           <h1>GAME OVER!</h1>
+          <div style={{ 
+            fontSize: window.innerWidth <= 480 ? '1.2em' : '1em', 
+            marginBottom: '20px',
+            textAlign: 'center',
+            color: '#ffd700'
+          }}>
+            FINAL SCORE: {score}
+          </div>
+          <div style={{ 
+            fontSize: window.innerWidth <= 480 ? '0.8em' : '1em', 
+            marginBottom: '30px',
+            textAlign: 'center',
+            color: '#00ff00',
+            fontStyle: 'italic'
+          }}>
+            {tauntMessage}
+          </div>
           <button onClick={reset}>RETRY</button>
-          <button onClick={() => { reset(); navigate('/'); }}>MAIN MENU</button> {/* Now calls reset() */}
+          <button onClick={() => { reset(); navigate('/'); }}>MAIN MENU</button>
         </GameOverScreen>
       )}
 
 
     </GameArea>
+    </>
   );
 }
 
