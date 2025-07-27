@@ -9,8 +9,21 @@ import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 
 // Define sounds (ensure these files are in public/game/)
-const shootSound = new Howl({ src: ['/game/shoot.mp3'] });
-const explosionSound = new Howl({ src: ['/game/explosion.mp3'] });
+const shootSound = new Howl({ 
+  src: ['/game/shoot.mp3'],
+  onloaderror: () => console.log('Shoot sound not found, continuing without sound'),
+  onplayerror: () => console.log('Shoot sound play error, continuing without sound')
+});
+const explosionSound = new Howl({ 
+  src: ['/game/explosion.mp3'],
+  onloaderror: () => console.log('Explosion sound not found, continuing without sound'),
+  onplayerror: () => console.log('Explosion sound play error, continuing without sound')
+});
+const crashSound = new Howl({ 
+  src: ['/game/crash.mp3'],
+  onloaderror: () => console.log('Crash sound not found, continuing without sound'),
+  onplayerror: () => console.log('Crash sound play error, continuing without sound')
+});
 
 // --- Game Constants ---
 const JET_WIDTH = 290;
@@ -114,7 +127,11 @@ const useGameStore = create((set, get) => ({
     if (now - state.lastFireTime < BULLET_FIRE_RATE_MS) {
         return;
     }
-    shootSound.play(); // Play sound
+    try {
+      shootSound.play(); // Play sound
+    } catch (error) {
+      console.log('Could not play shoot sound');
+    }
     set((state) => ({
       bullets: [
         ...state.bullets,
@@ -165,7 +182,11 @@ const useGameStore = create((set, get) => ({
            const bulletRect = { x: bullet.x, y: bullet.y, width: getBulletWidth(), height: getBulletHeight() };
            const brickRect = { x: brick.x, y: brick.y, width: getBrickWidth(), height: getBrickHeight() };
            if (AABB(bulletRect, brickRect)) {
-          explosionSound.play(); // Play explosion sound
+                         try {
+                 explosionSound.play(); // Play explosion sound
+               } catch (error) {
+                 console.log('Could not play explosion sound');
+               }
           // Add explosion at brick center
                          currentExplosions.push({
                  id: Date.now() + Math.random(),
@@ -200,18 +221,23 @@ const useGameStore = create((set, get) => ({
       width: getJetWidth(), 
       height: getJetHeight() 
     };
-    const brickHitsJet = filteredBricks.some(brick => {
-      const brickRect = { x: brick.x, y: brick.y, width: getBrickWidth(), height: getBrickHeight() };
-      const collision = AABB(brickRect, jetRect);
-      if (collision) {
-        console.log('Jet collision detected!', {
-          brick: brickRect,
-          jet: jetRect,
-          jetX: jetX
-        });
-      }
-      return collision;
-    });
+             const brickHitsJet = filteredBricks.some(brick => {
+           const brickRect = { x: brick.x, y: brick.y, width: getBrickWidth(), height: getBrickHeight() };
+           const collision = AABB(brickRect, jetRect);
+           if (collision) {
+             console.log('Jet collision detected!', {
+               brick: brickRect,
+               jet: jetRect,
+               jetX: jetX
+             });
+             try {
+               crashSound.play(); // Play crash sound
+             } catch (error) {
+               console.log('Could not play crash sound');
+             }
+           }
+           return collision;
+         });
     const gameOverNow = newMissedBricks >= 3 || brickHitsJet;
 
     set((state) => ({
