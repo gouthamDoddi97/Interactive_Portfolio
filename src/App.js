@@ -226,6 +226,7 @@ const BrickContainer = styled.div`
   }
 `;
 
+// --- Brick styled component (PC main menu) ---
 const Brick = styled.div`
   font-size: 3em;
   padding: 20px 40px;
@@ -243,11 +244,17 @@ const Brick = styled.div`
     `
     border-color: yellow;
     box-shadow: 0 0 15px yellow, 0 0 25px orange;
+    color: yellow;
     transform: scale(1.05);
+    text-shadow: 2px 2px #000, 0 0 15px yellow;
   `}
 
   &:hover {
+    border-color: yellow;
+    box-shadow: 0 0 15px yellow, 0 0 25px orange;
+    color: yellow;
     transform: scale(1.05);
+    text-shadow: 2px 2px #000, 0 0 15px yellow;
   }
 
   @media (max-width: 768px) {
@@ -744,6 +751,19 @@ const TitleText = styled.div`
          const [isTransitioning, setIsTransitioning] = useState(false);
          const [musicEnabled, setMusicEnabled] = useState(true);
 
+  // --- New: PC hover handler for bricks ---
+  const handleBrickHover = (index) => {
+    setSelectedBrickIndex(index);
+    playMenuSelect();
+  };
+
+  // --- New: Mobile tap handler for main menu ---
+  const handleMobileMenuTap = (index, path) => {
+    setSelectedMobileIndex(index);
+    playMenuSelect();
+    setTimeout(() => navigate(path), 120); // Small delay for highlight effect
+  };
+
   const handleSelectClick = useCallback(() => {
     playMenuSelect();
     // Update both desktop and mobile selection
@@ -964,34 +984,43 @@ const TitleText = styled.div`
 
           <BrickContainer>
             {(Array.isArray(BRICK_KEYS) ? BRICK_KEYS : []).map((key, index) => (
-              <Brick key={key} $isSelected={index === selectedBrickIndex}>
+              <Brick
+                key={key}
+                $isSelected={index === selectedBrickIndex}
+                onMouseEnter={() => handleBrickHover(index)}
+                onClick={() => {
+                  setSelectedBrickIndex(index);
+                  playMenuSelect();
+                  navigate(`/${key}`);
+                }}
+              >
                 {key.charAt(0).toUpperCase() + key.slice(1)}
               </Brick>
             ))}
           </BrickContainer>
 
           <MobileMainMenuContainer>
-            <MobileMainMenuItem 
+            <MobileMainMenuItem
               $isSelected={selectedMobileIndex === 0}
-              onClick={() => navigate('/experience')}
+              onClick={() => handleMobileMenuTap(0, '/experience')}
             >
               Experience
             </MobileMainMenuItem>
-            <MobileMainMenuItem 
+            <MobileMainMenuItem
               $isSelected={selectedMobileIndex === 1}
-              onClick={() => navigate('/skills')}
+              onClick={() => handleMobileMenuTap(1, '/skills')}
             >
               Skills
             </MobileMainMenuItem>
-            <MobileMainMenuItem 
+            <MobileMainMenuItem
               $isSelected={selectedMobileIndex === 2}
-              onClick={() => navigate('/education')}
+              onClick={() => handleMobileMenuTap(2, '/education')}
             >
               Education
             </MobileMainMenuItem>
-            <MobileMainMenuItem 
+            <MobileMainMenuItem
               $isSelected={selectedMobileIndex === 3}
-              onClick={() => navigate('/about')}
+              onClick={() => handleMobileMenuTap(3, '/about')}
             >
               About Me
             </MobileMainMenuItem>
