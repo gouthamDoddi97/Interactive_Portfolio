@@ -92,7 +92,8 @@ export const careerHighlights = [
   "Consistently one of the most productive employees at Dhenusya Infotech, rapidly building applications on short notice and working weekends to meet deadlines, contributing to a significant salary increase (over 150%) from probation to departure.",
   "Conducted Python and web development seminars, teaching 50-60 individuals at a local NGO's seminar hall, with one participant subsequently securing a job within Dhenusya Infotech.",
   "Independently developed a critical analytics dashboard for manpower requisition and COVID-19 vaccination statistics, which remains extensively used in Apollo Telehealth's internal ERP: https://rise.hng.co.in/",
-  "As the sole non-IT student on a team of IIT students at TeenagerStartups.com, actively contributed to improving code quality by ensuring adherence to PEP 8 guidelines and enhancing readability during unit test development, often praised by my IIT student colleagues for these contributions."
+  "As the sole non-IT student on a team of IIT students at TeenagerStartups.com, actively contributed to improving code quality by ensuring adherence to PEP 8 guidelines and enhancing readability during unit test development, often praised by my IIT student colleagues for these contributions.",
+  "Submitted open-source pull requests to two perfume e-commerce projects — a Django 6.0.2/Python 3.13 dependency upgrade and an e-commerce frontend initialization — demonstrating the ability to navigate and improve unfamiliar codebases."
 ];
 
 export const earlyCareer = [
