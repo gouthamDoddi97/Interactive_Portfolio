@@ -817,9 +817,24 @@ const TitleText = styled.div`
   const handleDownloadResume = useCallback(async () => {
     playMenuSelect();
     try {
-                   // Fetch the resume HTML file
-             const response = await fetch('/Interactive_Portfolio/resume.html');
-      const htmlContent = await response.text();
+      // Fetch the resume HTML file (try app-relative path first, fallback to root)
+      const resumePath = process.env.PUBLIC_URL + '/resume.html';
+      const response = await fetch(resumePath);
+      let htmlContent = await response.text();
+
+      // Fetch the profile photo and inline it as base64 so html2pdf renders it correctly
+      try {
+        const imgResponse = await fetch(process.env.PUBLIC_URL + '/MyPhoto.jpeg');
+        const imgBlob = await imgResponse.blob();
+        const base64 = await new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.readAsDataURL(imgBlob);
+        });
+        htmlContent = htmlContent.replace(/src="[^"]*MyPhoto\.jpeg"/, `src="${base64}"`);
+      } catch (imgErr) {
+        console.warn('Could not inline profile photo:', imgErr);
+      }
 
       // Create a temporary div to hold the HTML content
       const tempDiv = document.createElement('div');

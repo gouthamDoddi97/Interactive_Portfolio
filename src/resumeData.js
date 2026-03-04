@@ -14,15 +14,28 @@ export const profileSummary = `Passionate Python Software Engineer with over 5 y
 
 export const experience = [
   {
+    title: "Founder & Full Stack Developer",
+    company: "Whiff-theory",
+    location: "Dubai, United Arab Emirates",
+    period: "2025 – Present",
+    bullets: [
+      "Founded and operate Whiff-theory, an independent perfume brand rooted in original fragrance compositions crafted from scratch.",
+      "Engineered a full e-commerce platform using MedusaJS, featuring a fully functional storefront for customers and a dedicated admin panel for order, product, and inventory management.",
+      "Built the frontend with Next.js, implementing response caching and cache revalidation patterns to ensure fast page loads and a seamless shopping experience.",
+      "Managing all aspects of the business end-to-end — product development, marketing, fulfilment, and platform operations — bringing first-hand understanding of the commitment and discipline required to run a company."
+    ]
+  },
+  {
     title: "Backend Developer",
     company: "Soul Trading LLC",
     location: "Dubai, United Arab Emirates",
-    period: "Oct 2024 – Present",
+    period: "Oct 2024 – Dec 2025",
     bullets: [
       "Developed backend components for a high-performance online gaming platform, including payment gateway integrations, features for enhancing player engagement through an offers module, and systems to ensure fair-play outcomes.",
       "Successfully launched and maintained games featured on prominent sites like Unicorn360 and 10cric, significantly boosting platform visibility and user engagement, particularly through the offers module I developed.",
       "Architected and implemented new game instances using advanced design patterns (Strategy, Factory, Singleton, Decorator, Manager) and SOLID principles, drastically reducing code complexity and improving extensibility.",
       "Designed and optimized complex database solutions in PostgreSQL (Supabase) and MongoDB, leveraging Redis and MQTT for high-throughput, real-time game functionality.",
+      "Created a B2C casino platform from stratch, which contains admin page to manage games and bets, and a player page to place bets and view games including live sports with scorecards, TV stream and hedge system. Utilized MQTT over WebSocket for broadcasting live stake updates to all clients from one API.",
       "Proactively debugged live game issues, managed API updates, and ensured continuous platform stability and performance."
     ]
   },
@@ -108,7 +121,11 @@ export const skills = [
   },
   {
     category: "Frontend Technologies",
-    items: ["React", "React Native", "HTML5", "CSS3"]
+    items: ["React", "React Native", "Next.js", "HTML5", "CSS3"]
+  },
+  {
+    category: "E-Commerce",
+    items: ["MedusaJS", "Response Caching & Cache Revalidation", "Admin & Storefront Architecture"]
   },
   {
     category: "DevOps & Tools",
@@ -151,7 +168,7 @@ export const interests = [
   "Music (Hobbyist Guitarist)",
   "MBTI (Psychology)",
   "Current Affairs (Geopolitics)",
-  "Latest Obsession: Perfumes"
+  "Perfumery & Fragrance Composition (Founder of Whiff-theory)"
 ];
 
 export const personalDetails = [
