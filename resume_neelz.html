@@ -1,0 +1,459 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DR. NEELAM AARIF - Resume</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Base Styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.4;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            color: #333;
+            font-size: 12px; /* Smaller font for better fit */
+        }
+
+        .container {
+            max-width: 900px; /* Wider to accommodate two columns */
+            margin: 10px auto;
+            background-color: #fff;
+            padding: 15px; /* Further reduced padding */
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            display: grid;
+            grid-template-columns: 2fr 1fr; /* Two columns: 2/3 for left, 1/3 for right */
+            gap: 20px; /* Further reduced gap between columns */
+        }
+
+        /* Header (Top of the Left Column) */
+        .header {
+            grid-column: 1 / 3; /* Spans both columns */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        /* Profile image placeholder (if user wants to add later) */
+        .profile-image-placeholder {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #ccc; /* Fallback background */
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 0.8em;
+            border: 2px solid #2c3e50; /* Border from template */
+            overflow: hidden; /* Ensures image stays within circle */
+        }
+        .profile-image-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures image fills the circle without distortion */
+        }
+
+        .header h1 {
+            font-size: 2em; /* Even smaller for better fit */
+            margin: 0;
+            color: #2c3e50;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            margin: 1px 0;
+            color: #555;
+            font-size: 0.9em;
+        }
+
+        .header a {
+            color: #007bff;
+            text-decoration: none;
+            margin: 0 8px;
+            transition: color 0.3s ease;
+        }
+
+        .header a:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+
+        /* Left Column Content */
+        .left-column {
+            grid-column: 1 / 2;
+        }
+
+        /* Right Column Content */
+        .right-column {
+            grid-column: 2 / 3;
+            padding-inline: 15px; /* Add some padding for visual separation */
+            border-left: 1px solid #eee; /* Light separator line */
+        }
+
+        /* Section Headings */
+        .section h2 {
+            font-size: 1.2em;
+            color: #2c3e50;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 2px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        /* Profile Summary (Right Column) */
+        .profile-summary p {
+            font-size: 0.9em;
+            color: #444;
+            line-height: 1.4;
+            text-align: justify;
+            margin-bottom: 12px;
+        }
+
+        /* Work Experience (Left Column) */
+        .job {
+            margin-bottom: 12px;
+            padding-left: 6px;
+            border-left: 3px solid #007bff; /* Accent border */
+        }
+
+        .job h3 {
+            font-size: 1em;
+            margin: 0 0 1px 0;
+            color: #34495e;
+            font-weight: 600;
+        }
+
+        .job p.meta {
+            font-size: 0.8em;
+            color: #777;
+            margin: 0 0 4px 0;
+        }
+
+        .job ul {
+            list-style: disc;
+            padding-left: 12px;
+            margin: 0;
+            color: #444;
+        }
+
+        .job ul li {
+            margin-bottom: 3px;
+            line-height: 1.2;
+        }
+
+        /* Skills (Right Column) */
+        .skills-category {
+            margin-bottom: 10px;
+        }
+
+        .skills-category h3 {
+            font-size: 0.95em;
+            color: #34495e;
+            margin: 0 0 3px 0;
+            font-weight: 500;
+        }
+
+        .skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px; /* Even tighter gap for smaller tags */
+        }
+
+        .skill-tag {
+            background-color: #e9f5ff;
+            color: #007bff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.75em;
+            font-weight: 500;
+            border: 1px solid #cce5ff;
+        }
+
+        .details-tag {
+            background-color: #eef0ee;
+            color: #ab770e;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.85em;
+            font-weight: 500;
+            border: 1px solid #a9a41a;
+        }
+
+        /* Education (Right Column) */
+        .education-item {
+            margin-bottom: 10px;
+        }
+
+        .education-item h3 {
+            font-size: 0.95em;
+            margin: 0 0 1px 0;
+            color: #34495e;
+            font-weight: 600;
+        }
+
+        .education-item p {
+            margin: 0;
+            color: #555;
+            font-size: 0.8em;
+        }
+
+        /* Interests & Personal Details (Right Column) */
+        .interests ul, .personal-details ul {
+            list-style: none; /* No bullets */
+            padding: 0;
+            margin: 0;
+            color: #444;
+        }
+
+        .interests ul li, .personal-details ul li {
+            margin-bottom: 2px;
+            font-size: 0.85em;
+        }
+
+        /* Print Specific Styles */
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+                background-color: #fff;
+                font-size: 8px; /* Even smaller font for print */
+                line-height: 1.1; /* Tighter line height for print */
+            }
+            .container {
+                box-shadow: none;
+                margin: 0;
+                padding: 5px; /* Minimal padding for print */
+                border-radius: 0;
+                width: 100%;
+                max-width: none;
+                grid-template-columns: 2.2fr 1fr; /* Adjust column ratio slightly for print */
+                gap: 10px;
+            }
+            .header {
+                margin-bottom: 6px;
+                padding-bottom: 4px;
+            }
+            .header h1 {
+                font-size: 1.4em;
+            }
+            .header p {
+                font-size: 0.8em;
+                margin: 0.5px 0;
+            }
+            .profile-image-placeholder {
+                width: 50px;
+                height: 50px;
+            }
+            .section {
+                margin-bottom: 8px;
+            }
+            .section h2 {
+                font-size: 1em;
+                margin-bottom: 6px;
+                padding-bottom: 2px;
+            }
+            .profile-summary p {
+                font-size: 0.85em;
+                margin-bottom: 8px;
+                line-height: 1.3;
+            }
+            .job {
+                margin-bottom: 8px;
+            }
+            .job h3 {
+                font-size: 0.95em;
+                margin: 0 0 1px 0;
+            }
+            .job p.meta {
+                font-size: 0.75em;
+                margin: 0 0 4px 0;
+            }
+            .job ul {
+                padding-left: 10px;
+            }
+            .job ul li {
+                margin-bottom: 1px;
+                font-size: 0.8em;
+                line-height: 1.2;
+            }
+            .skills-category {
+                margin-bottom: 6px;
+            }
+            .skills-category h3 {
+                font-size: 0.9em;
+                margin: 0 0 3px 0;
+            }
+            .skill-tag {
+                padding: 1px 5px;
+                font-size: 0.7em;
+            }
+            .education-item {
+                margin-bottom: 6px;
+            }
+            .education-item h3 {
+                font-size: 0.9em;
+            }
+            .education-item p {
+                font-size: 0.75em;
+            }
+            .interests ul li, .personal-details ul li {
+                font-size: 0.8em;
+                margin-bottom: 1px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="profile-image-placeholder">
+                <img src="./MyPhoto.jpeg" alt="Dr. Neelam Aarif Profile Picture" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; color: #666; font-size: 0.8em;\'>Photo</div>';">
+            </div>
+            <h1>DR. NEELAM AARIF</h1>
+            <p>
+                Dubai, UAE | +971 50 817 2655 | <a href="mailto:aarifneelam46@gmail.com">aarifneelam46@gmail.com</a> |
+                <a href="https://www.linkedin.com/in/dr-neelam-aarif-12416b287" target="_blank">LinkedIn</a>
+            </p>
+        </header>
+
+        <div class="left-column">
+          <section class="section experience">
+              <h2>PROFESSIONAL EXPERIENCE</h2>
+
+              <div class="job">
+                  <h3>Founder &amp; CEO <br> Whiff Theory</h3>
+                  <p class="meta">India | Mar 2026 - Present</p>
+                  <ul>
+                      <li>Founded a premium fragrance brand focused on introducing sophisticated and globally inspired fragrances to the Indian market.</li>
+                      <li>Led product development, supplier sourcing, packaging design, pricing strategy, branding, and market positioning.</li>
+                      <li>Successfully launched four signature fragrances and generated strong customer retention through repeat purchases.</li>
+                      <li>Established organic customer acquisition through word-of-mouth marketing without paid advertising.</li>
+                      <li>Generated interest from multiple prospective investors during the initial launch phase.</li>
+                      <li>Manage supplier relationships, inventory planning, customer engagement, and business operations.</li>
+                  </ul>
+              </div>
+
+              <div class="job">
+                  <h3>Business Manager – Fund Operations <br> Altus Fund Management Company Ltd</h3>
+                  <p class="meta">Dubai, UAE | Apr 2025 - Present</p>
+                  <ul>
+                      <li>Serve as key liaison between fund administrator, investors, and internal accounting teams.</li>
+                      <li>Manage investor onboarding, KYC/AML documentation, regulatory filings, and stakeholder communications.</li>
+                      <li>Supported ABN AMRO fund account setup and onboarding documentation.</li>
+                      <li>Oversee shareholder subscription and redemption requests while maintaining compliance standards.</li>
+                  </ul>
+              </div>
+
+              <div class="job">
+                  <h3>International Compliance &amp; Marketing Manager <br> Lincoln Management Consultancy</h3>
+                  <p class="meta">Dubai, UAE | Oct 2023 - Mar 2025</p>
+                  <ul>
+                      <li>Developed compliance frameworks aligned with regional and international regulations.</li>
+                      <li>Managed policy documentation, reporting processes, and regulatory support activities.</li>
+                      <li>Created marketing initiatives to strengthen brand visibility and support client acquisition.</li>
+                      <li>Collaborated across departments to align business and compliance objectives.</li>
+                  </ul>
+              </div>
+
+              <div class="job">
+                  <h3>Marketing &amp; Growth Strategist <br> Startup Accelerator India</h3>
+                  <p class="meta">India | Apr 2018 - Aug 2023</p>
+                  <ul>
+                      <li>Managed growth initiatives for 11 startups across multiple industries.</li>
+                      <li>Developed go-to-market strategies using market research and customer insights.</li>
+                      <br/>
+                                            <br/>
+                      <li>Coordinated 30+ product launches and integrated marketing campaigns.</li>
+                      <li>Mentored startup founders on branding, positioning, and growth strategy.</li>
+                  </ul>
+              </div>
+
+                </section>
+
+            <section class="section certificates">
+              <h2>ACHIEVEMENTS</h2>
+              <ul>
+                  <li>Founder of Whiff Theory, a premium fragrance brand launched in 2026.</li>
+                  <li>Generated early investor interest within months of launch.</li>
+                  <li>Top 3 PhD Rank Holder and Scholarship Recipient.</li>
+                  <li>Young Achiever Award Recipient for Highest MBA Placement Package.</li>
+                  <li>Best Employee Award for contributions to startup growth initiatives.</li>
+                  <li>First Female Sports Captain at Bethany School.</li>
+              </ul>
+          </section>
+
+            
+            </div>
+
+      <div class="right-column">
+          <section class="section profile-summary">
+              <h2>PROFESSIONAL SUMMARY</h2>
+              <p>
+                  Business and operations professional with a PhD in International Business and experience spanning entrepreneurship, fund operations, investor relations, regulatory compliance, business development, marketing strategy, and startup growth. Founder of Whiff Theory, a premium fragrance brand, with demonstrated success in product development, brand building, stakeholder management, and early investor engagement. Proven ability to drive growth, manage cross-functional initiatives, and build strong relationships with clients, investors, and business partners.
+              </p>
+          </section>
+
+          <section class="section skills">
+              <h2>CORE COMPETENCIES</h2>
+              <div class="skills-category">
+                  <div class="skills-list">
+                      <span class="skill-tag">Business Development</span>
+                      <span class="skill-tag">Entrepreneurship</span>
+                      <span class="skill-tag">Investor Relations</span>
+                      <span class="skill-tag">Fund Operations</span>
+                      <span class="skill-tag">KYC/AML</span>
+                      <span class="skill-tag">Regulatory Compliance</span>
+                      <span class="skill-tag">Stakeholder Management</span>
+                      <span class="skill-tag">Strategic Planning</span>
+                      <span class="skill-tag">Brand Strategy</span>
+                      <span class="skill-tag">Product Development</span>
+                      <span class="skill-tag">Go-to-Market Strategy</span>
+                      <span class="skill-tag">Market Research</span>
+                      <span class="skill-tag">Customer Acquisition</span>
+                      <span class="skill-tag">Startup Operations</span>
+                      <span class="skill-tag">Leadership</span>
+                      <span class="skill-tag">Project Management</span>
+                  </div>
+              </div>
+          </section>
+
+          <section class="section education">
+              <h2>EDUCATION</h2>
+              <div class="education-item">
+                  <h3>PhD – International Business</h3>
+                  <h4>GITAM University</h4>
+                  <p>2020 – 2025</p>
+              </div>
+              <div class="education-item">
+                  <h3>MBA – International Business</h3>
+                  <h4>GITAM University</h4>
+                  <p>2016 – 2018</p>
+              </div>
+          </section>
+
+
+
+          <section class="section languages">
+              <h2>LANGUAGES</h2>
+              <ul>
+                  <li>English</li>
+                  <li>Hindi</li>
+                  <li>Telugu</li>
+                  <li>Gujarati</li>
+              </ul>
+          </section>
+      </div>
+    </div>
+</body>
+</html>

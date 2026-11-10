@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goutham Doddi - Resume</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 0.5in;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10.5pt;
+            line-height: 1.35;
+            color: #000;
+            background-color: #fff;
+            margin: 0 auto;
+            padding: 0.5in;
+            max-width: 8.27in;
+        }
+
+        h1 {
+            font-size: 18pt;
+            font-weight: bold;
+            margin: 0 0 4pt 0;
+            text-align: center;
+        }
+
+        .contact {
+            margin: 0 0 14pt 0;
+        }
+
+        .contact p,
+        .contact li {
+            margin: 2pt 0;
+        }
+
+        .contact ul {
+            margin: 0;
+            padding-left: 0;
+            list-style: none;
+        }
+
+        h2 {
+            font-size: 11.5pt;
+            font-weight: bold;
+            margin: 14pt 0 6pt 0;
+            padding-bottom: 2pt;
+            border-bottom: 1px solid #000;
+        }
+
+        h3 {
+            font-size: 10.5pt;
+            font-weight: bold;
+            margin: 10pt 0 1pt 0;
+        }
+
+        .meta {
+            margin: 0 0 4pt 0;
+            font-style: italic;
+        }
+
+        p {
+            margin: 0 0 6pt 0;
+        }
+
+        ul {
+            margin: 0 0 6pt 0;
+            padding-left: 18pt;
+        }
+
+        li {
+            margin-bottom: 3pt;
+        }
+
+        .skill-line {
+            margin: 0 0 4pt 0;
+        }
+
+        .print-hint {
+            max-width: 8.27in;
+            margin: 12px auto 0 auto;
+            padding: 10px 14px;
+            border: 1px solid #999;
+            background-color: #f4f4f4;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10pt;
+            line-height: 1.4;
+        }
+
+        /*
+          Print-to-PDF from the browser (Ctrl+P / Cmd+P) is required so the PDF
+          keeps a real text layer. Rasterized exports are unreadable to an ATS.
+        */
+        @media print {
+            body {
+                padding: 0;
+                max-width: none;
+            }
+
+            .print-hint {
+                display: none;
+            }
+
+            h2, h3 {
+                page-break-after: avoid;
+            }
+
+            li {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Goutham Doddi</h1>
+
+    <h2>Contact</h2>
+    <p>Email: gouthamdoddi97@gmail.com</p>
+    <p>Phone: +91 79810 75481</p>
+    <p>LinkedIn: https://www.linkedin.com/in/goutham-doddi-22441b138/</p>
+    <p>GitHub: https://github.com/GouthamDoddi</p>
+    <p>Location: Visakhapatnam, India</p>
+
+    <h2>Summary</h2>
+    <p>
+        Backend-focused Software Engineer with over 5 years of experience building real-time,
+        high-throughput systems across online gaming and e-commerce. Specializes in event-driven
+        architecture using MQTT and WebSocket, payment gateway integration, and fair play systems that
+        validate game outcomes on live betting platforms. Deep grounding in object-oriented
+        programming, low-level design, and SOLID principles, backed by a Test Engineer background that
+        established Test-Driven Development and quality-first practices. Delivers maintainable,
+        scalable, and extensible services in Python, Node.js, and TypeScript on PostgreSQL, MongoDB,
+        and Redis.
+    </p>
+
+    <h2>Work Experience</h2>
+
+    <h3>Founder and Full Stack Developer</h3>
+    <p>Whiff-theory | Dubai, United Arab Emirates | Jan 2025 - Spe 2025</p>
+    <ul>
+        <li>Founded and operate Whiff-theory, an independent perfume brand producing inspired fragrances crafted for the Indian market.</li>
+        <li>Engineered a full e-commerce platform using MedusaJS, featuring a functional customer storefront and a dedicated admin panel for order, product, and inventory management.</li>
+        <li>Built the frontend with Next.js, implementing response caching and cache revalidation patterns to ensure fast page loads and a seamless shopping experience.</li>
+        <li>Integrated Razorpay for payment processing and Shiprocket for shipping, order tracking, and fulfilment automation across the storefront.</li>
+        <li>Manage the business end to end across product development, marketing, fulfilment, and platform operations, including design of the product line, packaging, and social media content.</li>
+    </ul>
+
+    <h3>Backend Developer</h3>
+    <p>Aura eGaming | Dubai, United Arab Emirates | Oct 2024 - Dec 2025</p>
+    <ul>
+        <li>Developed backend components for a high-performance online gaming platform, including payment gateway integrations, a player engagement offers module, and fair play systems that validate game outcomes.</li>
+        <li>Built a B2C casino platform from scratch, comprising an admin console for game and bet management and a player interface for placing bets and viewing live sports with scorecards, TV streaming, and a hedge system.</li>
+        <li>Built an ERP system using Flask and Python, including salary automation records that used the Strategy design pattern to map each employee's bank to the bank's required salary-record format.</li>
+        <li>Implemented MQTT over WebSocket to broadcast live stake updates to every connected client from a single API, keeping real-time state synchronized across concurrent players.</li>
+        <li>Designed and optimized complex database solutions in PostgreSQL (Supabase) and MongoDB, leveraging Redis and MQTT for high-throughput, real-time game functionality.</li>
+        <li>Architected and implemented new game instances using design patterns (Strategy, Factory, Singleton, Decorator, Manager) and SOLID principles, reducing code complexity and improving extensibility.</li>
+        <li>Launched and maintained games featured on prominent sites including Unicorn360 and 10cric, increasing platform visibility and user engagement through the offers module.</li>
+        <li>Debugged live game issues, managed API updates, and ensured continuous platform stability and performance.</li>
+    </ul>
+
+    <h3>Full Stack Software Engineer</h3>
+    <p>Dhenusya Infotech | Visakhapatnam, India | Jan 2023 - Oct 2024</p>
+    <ul>
+        <li>Engineered and deployed dynamic dashboards and marketing tools for email, WhatsApp, and SMS campaigns using React, React Native, and TypeScript.</li>
+        <li>Engineered high-performance backend services and optimized ERP solutions through system design improvements, substantially improving reporting efficiency.</li>
+        <li>Reduced operational costs by implementing automated server and database backup shell scripts while managing multi-client infrastructure and deployments.</li>
+        <li>Conducted comprehensive testing and quality assurance to ensure the reliability and performance of deployed solutions.</li>
+    </ul>
+
+    <h3>Product Developer</h3>
+    <p>Apollo Tele Health | Hyderabad, India | Jan 2022 - Sep 2022</p>
+    <ul>
+        <li>Contributed as part of a small, agile development team to the delivery of a Django-based ERP software project.</li>
+        <li>Developed an analytics dashboard for manpower requisition and COVID-19 vaccination tracking within the ERP, using Python and Django.</li>
+        <li>Applied prior testing experience to identify and resolve issues including missing database migrations and sub-optimal code quality.</li>
+        <li>Developed comprehensive engineering guidelines and an entity-relationship diagram to improve software quality.</li>
+        <li>Built user-facing onboarding screens for new registrants to the platform and integrated the dashboard with existing systems.</li>
+        <li>Advocated to management for software quality improvements and drove their implementation through rigorous testing and quality assurance practices.</li>
+    </ul>
+
+    <h3>Associate Developer</h3>
+    <p>Zitisi Solutions | Hyderabad, India | Nov 2020 - Dec 2021</p>
+    <ul>
+        <li>Independently engineered ShareYourTruck, a React Native cross-platform delivery application, managing end-to-end frontend and backend development with real-time order tracking, driver management, and payment processing.</li>
+        <li>Architected the ShareYourTruck mobile experience for iOS and Android, enabling logistics and on-demand delivery services with integrated mapping, live notifications, and customer-driver communication.</li>
+        <li>Developed full-stack backend infrastructure for MiraMira, an MBTI-based school platform, implementing personality-driven student matching and personalized dashboards.</li>
+        <li>Delivered custom HRMS, ERP, and dashboard solutions for multiple clients, owning the complete lifecycle from requirements gathering to production deployment and maintenance.</li>
+        <li>Led and mentored a backend development team, ensuring adherence to best practices and integrating Twilio and SendGrid across multiple client projects.</li>
+        <li>Improved development efficiency through serverless architecture and REST APIs on MongoDB Atlas, integrating third-party APIs including Stripe and Calendly via webhooks.</li>
+        <li>Introduced Docker containerization for backend applications, streamlining deployment across diverse client environments.</li>
+    </ul>
+
+    <h3>Software Test Engineer</h3>
+    <p>TeenagerStartups.com | Remote | Jan 2020 - Oct 2020</p>
+    <ul>
+        <li>Implemented comprehensive backend test suites using the Django unit test framework, achieving 90 percent test coverage and reducing production defects.</li>
+        <li>Conducted frontend testing with Selenium and cross-browser compatibility testing with BrowserStack and LambdaTest.</li>
+        <li>Containerized the application using Docker and Docker Compose, simplifying deployment.</li>
+        <li>Established Continuous Integration pipelines in GitLab, improving development efficiency and product quality.</li>
+        <li>Applied a systematic approach to test planning, execution, and reporting within a fully remote team.</li>
+    </ul>
+
+    <h3>Bartender</h3>
+    <p>URU Brewpark | Bangalore, India | Jun 2018 - Oct 2018</p>
+    <ul>
+        <li>Trained in flair and mixology, developing extensive product knowledge and guest-facing communication skills.</li>
+        <li>Contributed to upselling and guest experience, and was recognized by management for dedication in the role.</li>
+        <li>Transitioned from hospitality to software development to pursue analytical and engineering strengths.</li>
+    </ul>
+
+    <h2>Skills</h2>
+    <ul>
+        <li>Programming Languages: Python, JavaScript, TypeScript, SQL</li>
+        <li>Backend and Real-Time: Flask, Django, Node.js, REST APIs, MQTT, MQTT over WebSocket, WebSocket, Publish/Subscribe Messaging, Event-Driven Architecture, Redis, Serverless Architecture, Webhooks, Third-Party API Integration, Twilio, SendGrid</li>
+        <li>Databases: PostgreSQL, MongoDB, Supabase, MongoDB Atlas, Database Design, Query Optimization, Schema Migrations</li>
+        <li>iGaming and Betting: Fair Play Systems, Fair-Play Validation, Game Outcome Verification, Player Engagement and Offers Modules, Payment Gateway Integration, Live Stake Broadcasting, Hedge System, Live Sports Scorecards, B2C Casino Platform</li>
+        <li>E-Commerce: MedusaJS, Next.js Storefront, Response Caching and Cache Revalidation, Order, Product and Inventory Management, Stripe API, Razorpay, Shiprocket, Shipping and Fulfilment Automation, Order Tracking</li>
+        <li>Frontend and Mobile: React, React Native, Next.js, Cross-Platform Mobile Development, HTML5, CSS3</li>
+        <li>Cloud and DevOps: AWS, Google Cloud Platform, Kubernetes (GKE), Docker, Docker Compose, CI/CD Pipelines, GitLab CI, Git, Shell Scripting</li>
+        <li>Testing and QA: Test-Driven Development (TDD), Unit Testing, Django Test Framework, Selenium, BrowserStack, LambdaTest, Regression Testing, Jira, Agile</li>
+        <li>Architecture and Design: Object-Oriented Programming, Low-Level Design (LLD), System Design, SOLID Principles, Design Patterns (Strategy, Factory, Singleton, Decorator, Manager)</li>
+    </ul>
+
+    <h2>Education</h2>
+    <p>Degree: Bachelor of Hospitality Management</p>
+    <p>University: Bharathiyar University</p>
+    <p>Location: Visakhapatnam, India</p>
+    <p>Graduation Date: Aug 2020</p>
+    <p>Duration: Sep 2017 - Aug 2020</p>
+
+    <h2>Certifications</h2>
+    <ul>
+        <li>CS50: Introduction to Computer Science, Harvard University</li>
+        <li>Data Structures, Algorithms and System Design, Scaler</li>
+        <li>Test-Driven Development with Django and Python, Udemy</li>
+        <li>UI/UX Research, Google</li>
+    </ul>
+
+    <h2>Key Achievements</h2>
+    <ul>
+        <li>Recognized as one of the most productive engineers at Dhenusya Infotech, delivering applications on short notice and earning a salary increase of over 150 percent from probation to departure.</li>
+        <li>Independently developed an analytics dashboard for manpower requisition and COVID-19 vaccination statistics that remains in extensive use within the Apollo Telehealth internal ERP (rise.hng.co.in).</li>
+        <li>Conducted Python and web development seminars for 50 to 60 attendees at a local NGO, with one participant subsequently hired at Dhenusya Infotech.</li>
+        <li>As the only non-IT-background engineer on a team of IIT students at TeenagerStartups.com, improved code quality by enforcing PEP 8 compliance and readability standards during unit test development.</li>
+        <li>Submitted open-source pull requests to two perfume e-commerce projects, covering a Django 6.0.2 and Python 3.13 dependency upgrade and an e-commerce frontend initialization.</li>
+    </ul>
+
+    <h2>Projects</h2>
+    <ul>
+        <li>Whiff-theory, independent perfume brand and e-commerce platform: whiff-theory.com</li>
+        <li>48-Hour Coding Challenge, animation-focused web application: nfthub-git-master-gotham-zerns-projects.vercel.app</li>
+    </ul>
+
+    <h2>Additional Information</h2>
+    <ul>
+        <li>Languages: English (Fluent), Hindi (Conversational), Telugu (Native), Russian (Reading proficiency)</li>
+        <li>Notice Period: Immediate joiner, no notice period required</li>
+        <li>Nationality: Indian</li>
+        <li>Interests: Tennis, guitar, MBTI and psychology, geopolitics, perfumery and fragrance composition</li>
+        <li>References: Available upon request</li>
+    </ul>
+
+    <div class="print-hint">
+        <strong>To export for job applications:</strong> press Ctrl+P (Cmd+P on macOS), choose
+        "Save as PDF", set margins to Default and scale to 100%, and disable "Headers and footers".
+        This produces a PDF with a real text layer that applicant tracking systems can read. Do not
+        use the portfolio's Download button for this file, as that export rasterizes the page into an
+        image with no extractable text.
+    </div>
+
+</body>
+</html>
