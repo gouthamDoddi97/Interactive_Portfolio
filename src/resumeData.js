@@ -4,13 +4,13 @@ export const profile = {
   name: "Goutham Doddi",
   phone: "+917981075481",
   email: "gouthamdoddi97@gmail.com",
-  location: "Karama Center, Dubai, United Arab Emirates",
+  location: "Visakhapatnam, India",
   image: "/MyPhoto.jpeg",
   linkedin: "https://www.linkedin.com/in/goutham-doddi-22441b138/",
   github: "https://github.com/GouthamDoddi",
 };
 
-export const profileSummary = `Passionate Python Software Engineer with over 5 years of experience, driven by a deep understanding of OOP principles and Low-Level Design. My unique background in hospitality honed my communication and problem-solving skills, which I now apply to my self-taught journey in programming. I began as a Test Engineer, fostering a strong foundation in Test-Driven Development (TDD) and robust coding practices, and specialize in building highly maintainable, scalable, and extensible code that strictly adheres to SOLID principles, ensuring minimal bugs and long-term reliability.`;
+export const profileSummary = `Backend-focused Software Engineer with over 5 years of experience building real-time, high-throughput systems across online gaming and e-commerce. I specialize in event-driven architecture using MQTT and WebSocket, payment gateway integration, and fair play systems that validate game outcomes on live betting platforms. My foundation is in OOP principles, Low-Level Design, and SOLID, reinforced by starting out as a Test Engineer where I built strong Test-Driven Development (TDD) and quality-first habits. I deliver maintainable, scalable, and extensible services in Python, Node.js, and TypeScript on PostgreSQL, MongoDB, and Redis.`;
 
 export const experience = [
   {
@@ -22,20 +22,22 @@ export const experience = [
       "Founded and operate Whiff-theory, an independent perfume brand rooted in original fragrance compositions crafted from scratch.",
       "Engineered a full e-commerce platform using MedusaJS, featuring a fully functional storefront for customers and a dedicated admin panel for order, product, and inventory management.",
       "Built the frontend with Next.js, implementing response caching and cache revalidation patterns to ensure fast page loads and a seamless shopping experience.",
-      "Managing all aspects of the business end-to-end — product development, marketing, fulfilment, and platform operations — bringing first-hand understanding of the commitment and discipline required to run a company."
+      "Integrated Razorpay for payment processing and Shiprocket for shipping, order tracking, and fulfilment automation across the storefront.",
+      "Managing all aspects of the business end-to-end — product development, packaging and social media content design, marketing, fulfilment, and platform operations — bringing first-hand understanding of the commitment and discipline required to run a company."
     ]
   },
   {
     title: "Backend Developer",
-    company: "Soul Trading LLC",
+    company: "Aura eGaming",
     location: "Dubai, United Arab Emirates",
     period: "Oct 2024 – Dec 2025",
     bullets: [
-      "Developed backend components for a high-performance online gaming platform, including payment gateway integrations, features for enhancing player engagement through an offers module, and systems to ensure fair-play outcomes.",
+      "Developed backend components for a high-performance online gaming platform, including payment gateway integrations, features for enhancing player engagement through an offers module, and fair play systems that validate game outcomes.",
       "Successfully launched and maintained games featured on prominent sites like Unicorn360 and 10cric, significantly boosting platform visibility and user engagement, particularly through the offers module I developed.",
       "Architected and implemented new game instances using advanced design patterns (Strategy, Factory, Singleton, Decorator, Manager) and SOLID principles, drastically reducing code complexity and improving extensibility.",
       "Designed and optimized complex database solutions in PostgreSQL (Supabase) and MongoDB, leveraging Redis and MQTT for high-throughput, real-time game functionality.",
-      "Created a B2C casino platform from stratch, which contains admin page to manage games and bets, and a player page to place bets and view games including live sports with scorecards, TV stream and hedge system. Utilized MQTT over WebSocket for broadcasting live stake updates to all clients from one API.",
+      "Built a B2C casino platform from scratch, comprising an admin console for game and bet management and a player interface for placing bets and viewing live sports with scorecards, TV streaming, and a hedge system.",
+      "Implemented MQTT over WebSocket to broadcast live stake updates to every connected client from a single API, keeping real-time state synchronized across concurrent players.",
       "Proactively debugged live game issues, managed API updates, and ensured continuous platform stability and performance."
     ]
   },
@@ -51,7 +53,7 @@ export const experience = [
       "Pioneered Docker containerization for backend applications, streamlining deployment and enhancing scalability.",
       "Engineered and deployed dynamic dashboards and marketing tools (email, WhatsApp, SMS) for operational needs and campaign effectiveness, utilizing React, React Native, and TypeScript.",
       "Conducted comprehensive testing and quality assurance to ensure the reliability and performance of deployed solutions.",
-      "Engineered high-performance backend systems using Rust and optimized ERP solutions with System Design strategies, drastically improving reporting efficiency.",
+      "Engineered high-performance backend services and optimized ERP solutions with System Design strategies, drastically improving reporting efficiency.",
       "Reduced operational costs by implementing automated server and database backup scripts, while owning HRMS development for multiple clients."
     ]
   },
@@ -114,37 +116,45 @@ export const earlyCareer = [
 export const skills = [
   {
     category: "Programming Languages",
-    items: ["Python", "JavaScript", "TypeScript", "Rust"]
+    items: ["Python", "JavaScript", "TypeScript", "SQL"]
   },
   {
-    category: "Backend Technologies",
-    items: ["Django", "Node.js", "REST APIs", "Serverless Architecture", "PostgreSQL", "MongoDB", "Redis", "MQTT", "Stripe API", "Twilio", "SendGrid"]
+    category: "Backend & Real-Time",
+    items: ["Django", "Node.js", "REST APIs", "MQTT", "MQTT over WebSocket", "WebSocket", "Publish/Subscribe Messaging", "Event-Driven Architecture", "Redis", "Serverless Architecture", "Webhooks", "Twilio", "SendGrid"]
   },
   {
-    category: "Frontend Technologies",
-    items: ["React", "React Native", "Next.js", "HTML5", "CSS3"]
+    category: "Databases",
+    items: ["PostgreSQL", "MongoDB", "Supabase", "MongoDB Atlas", "Database Design", "Query Optimization", "Schema Migrations"]
+  },
+  {
+    category: "iGaming & Betting",
+    items: ["Fair Play Systems", "Game Outcome Verification", "Player Engagement & Offers Modules", "Payment Gateway Integration", "Live Stake Broadcasting", "Hedge System", "Live Sports Scorecards", "B2C Casino Platform"]
   },
   {
     category: "E-Commerce",
-    items: ["MedusaJS", "Response Caching & Cache Revalidation", "Admin & Storefront Architecture"]
+    items: ["MedusaJS", "Next.js Storefront", "Response Caching & Cache Revalidation", "Order, Product & Inventory Management", "Stripe API", "Razorpay", "Shiprocket", "Shipping & Fulfilment Automation", "Order Tracking", "Product & Packaging Design", "Social Media Content"]
   },
   {
-    category: "DevOps & Tools",
-    items: ["Docker", "Git", "CI/CD Pipelines", "Selenium", "Unit Testing", "Test-Driven Development (TDD)", "BrowserStack", "LambdaTest", "Jira"]
+    category: "Frontend & Mobile",
+    items: ["React", "React Native", "Next.js", "Cross-Platform Mobile Development", "HTML5", "CSS3"]
   },
   {
-    category: "Cloud Platforms",
-    items: ["AWS", "Google Cloud (GKE)", "Supabase", "MongoAtlas"]
+    category: "Cloud & DevOps",
+    items: ["AWS", "Google Cloud Platform", "Kubernetes (GKE)", "Docker", "Docker Compose", "CI/CD Pipelines", "GitLab CI", "Git", "Shell Scripting"]
   },
   {
-    category: "Design Principles",
-    items: ["OOP", "Low-Level Design (LLD)", "SOLID Principles", "Design Patterns (Strategy, Factory, Singleton, Decorator, Manager)"]
+    category: "Testing & QA",
+    items: ["Test-Driven Development (TDD)", "Unit Testing", "Django Test Framework", "Selenium", "BrowserStack", "LambdaTest", "Regression Testing", "Jira", "Agile"]
+  },
+  {
+    category: "Architecture & Design",
+    items: ["OOP", "Low-Level Design (LLD)", "System Design", "SOLID Principles", "Design Patterns (Strategy, Factory, Singleton, Decorator, Manager)"]
   }
 ];
 
 export const education = [
   {
-    degree: "Hospitality Management",
+    degree: "Bachelor of Hospitality Management",
     institution: "Bharathiyar University",
     location: "Visakhapatnam, India",
     period: "Sep 2017 – Aug 2020"
@@ -173,7 +183,7 @@ export const interests = [
 ];
 
 export const personalDetails = [
-  { label: "Notice Period/Availability", value: "30 days / Available from August 21, 2025" },
+  { label: "Notice Period/Availability", value: "Immediate joiner, no notice period required" },
   { label: "Nationality", value: "Indian" },
   { label: "Marital Status", value: "Single" },
   { label: "Languages", value: "English (Fluent), Hindi, Telugu (Native), Russian (Can Read)" }

@@ -13,7 +13,6 @@ import WorkExperience from './components/WorkExperience';
 import Skills from './components/Skills';
 import AboutMe from './components/AboutMe';
 import Education from './components/Education';
-import html2pdf from 'html2pdf.js';
 
 import {
   profile,
@@ -23,11 +22,14 @@ import {
   profileSummary,
   careerHighlights,
   earlyCareer,
-  links,
   interests,
   personalDetails,
   certificates,
 } from './resumeData';
+
+// Shared with Game.js, which also reads this flag. Seeded to match the default
+// GAME SOUND state so effects are audible before the toggle is ever pressed.
+window.globalSoundEnabled = true;
 
 // Menu select sound
 const menuSelectSound = new Howl({ 
@@ -83,6 +85,7 @@ const jetEngineSound = new Howl({
 });
 
 const playMenuSelect = () => {
+  if (!window.globalSoundEnabled) return;
   try {
     menuSelectSound.play();
     console.log('Menu select sound played');
@@ -92,6 +95,7 @@ const playMenuSelect = () => {
 };
 
 const playFlyBySound = () => {
+  if (!window.globalSoundEnabled) return;
   try {
     flyBySound.play();
     console.log('Fly by sound played');
@@ -816,56 +820,64 @@ const TitleText = styled.div`
 
   const handleDownloadResume = useCallback(async () => {
     playMenuSelect();
-    try {
-      // Fetch the resume HTML file (try app-relative path first, fallback to root)
-      const resumePath = process.env.PUBLIC_URL + '/resume.html';
-      const response = await fetch(resumePath);
-      let htmlContent = await response.text();
 
-      // Fetch the profile photo and inline it as base64 so html2pdf renders it correctly
-      try {
-        const imgResponse = await fetch(process.env.PUBLIC_URL + '/MyPhoto.jpeg');
-        const imgBlob = await imgResponse.blob();
-        const base64 = await new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result);
-          reader.readAsDataURL(imgBlob);
-        });
-        htmlContent = htmlContent.replace(/src="[^"]*MyPhoto\.jpeg"/, `src="${base64}"`);
-      } catch (imgErr) {
-        console.warn('Could not inline profile photo:', imgErr);
+    // The browser's own print-to-PDF is used instead of a canvas-based export so the
+    // resulting PDF keeps a selectable text layer. Rasterized PDFs are invisible to
+    // applicant tracking systems, which extract text rather than reading pixels.
+    let frame;
+    try {
+      const resumePath = process.env.PUBLIC_URL + '/resume-ats.html';
+      const response = await fetch(resumePath);
+      if (!response.ok) {
+        throw new Error(`Could not load ${resumePath} (${response.status})`);
+      }
+      const htmlContent = await response.text();
+
+      frame = document.createElement('iframe');
+      frame.setAttribute('title', 'Resume print view');
+      frame.style.position = 'fixed';
+      frame.style.width = '0';
+      frame.style.height = '0';
+      frame.style.border = '0';
+      frame.style.right = '0';
+      frame.style.bottom = '0';
+      document.body.appendChild(frame);
+
+      const frameDoc = frame.contentDocument || frame.contentWindow.document;
+      frameDoc.open();
+      frameDoc.write(htmlContent);
+      frameDoc.close();
+
+      await new Promise((resolve) => {
+        if (frameDoc.readyState === 'complete') {
+          resolve();
+        } else {
+          frame.addEventListener('load', resolve, { once: true });
+        }
+      });
+
+      if (frameDoc.fonts && frameDoc.fonts.ready) {
+        await frameDoc.fonts.ready;
       }
 
-      // Create a temporary div to hold the HTML content
-      const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = htmlContent;
-      document.body.appendChild(tempDiv);
-
-      // Configure PDF options
-      const opt = {
-        margin: 0.5,
-        filename: 'Goutham_Doddi_Resume.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-        },
-        jsPDF: {
-          unit: 'in',
-          format: 'a4',
-          orientation: 'portrait',
-        },
+      const cleanup = () => {
+        if (frame && frame.parentNode) {
+          document.body.removeChild(frame);
+          frame = null;
+        }
       };
+      frame.contentWindow.addEventListener('afterprint', cleanup, { once: true });
+      // Safari and some mobile browsers never fire afterprint.
+      setTimeout(cleanup, 60000);
 
-      // Generate and download PDF
-      await html2pdf().from(tempDiv).set(opt).save();
-
-      // Clean up
-      document.body.removeChild(tempDiv);
+      frame.contentWindow.focus();
+      frame.contentWindow.print();
     } catch (error) {
-      console.error('Error downloading resume:', error);
-      alert('Error downloading resume. Please try again.');
+      console.error('Error preparing resume for download:', error);
+      if (frame && frame.parentNode) {
+        document.body.removeChild(frame);
+      }
+      alert('Error preparing resume. Please try again.');
     }
   }, []);
 
