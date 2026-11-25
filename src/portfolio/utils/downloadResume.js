@@ -1,6 +1,6 @@
 export async function downloadResume() {
-  const resumePath = `${process.env.PUBLIC_URL}/resume-ats.html`;
-  const response = await fetch(resumePath);
+  const resumePath = `${process.env.PUBLIC_URL}/resume-ats.html?v=${Date.now()}`;
+  const response = await fetch(resumePath, { cache: 'no-store' });
   if (!response.ok) {
     throw new Error(`Could not load ${resumePath} (${response.status})`);
   }
