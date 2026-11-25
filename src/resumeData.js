@@ -17,7 +17,7 @@ export const experience = [
     title: "Founder and Full Stack Developer",
     company: "Whiff-theory",
     location: "Dubai, United Arab Emirates",
-    period: "Jan 2025 - Sep 2025",
+    period: "Jan 2026 - Sep 2026",
     bullets: [
       "Founded and operate Whiff-theory, an independent perfume brand producing inspired fragrances crafted for the Indian market.",
       "Engineered a full e-commerce platform using MedusaJS, featuring a functional customer storefront and a dedicated admin panel for order, product, and inventory management.",
